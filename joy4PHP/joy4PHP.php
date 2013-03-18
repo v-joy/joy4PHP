@@ -1,6 +1,8 @@
 <?php
 class joy4PHP{
 	
+	protected $_reg = null;
+	
 	public function __construct($configs=null){
 		//handle configuration
 		$configType = strtolower(gettype($configs));
@@ -16,37 +18,67 @@ class joy4PHP{
 			default:
 				throw new Exception("不支持该类型！");
 		}
-		
-		
-		
-		
-		$this->_loadLib();
-		$reg = Reg::getInstance();
-		echo $reg->name;
+		$this->_loadLib($finalConfig);
 	}
 	
 	public function run(){
+		//get module and action 
+		Dispatcher::dispatch();
+		
+		//use reflaction to call requested method in class
+		$module = Dispatcher::getModule();
+		$action = Dispatcher::getAction();
+		$controllerName = $this->_reg->config_application_path."/Lib/Controllers/".$module.".class.php";
+		if (is_file($controllerName)) {
+			require_once $controllerName;
+		}else if (is_file($this->_reg->config_application_path."/Lib/Controllers/__empty.class.php")) {
+			require_once $this->_reg->config_application_path."/Lib/Controllers/__empty.class.php";
+			$module = "empty";
+		}else{
+			throw new Exception("can not find the controller!");
+		}
+		$controllerClassName = $module."Controller";
+		$controller = new $controllerClassName();
+		
+		$controllerReflection = new ReflectionClass($controllerClassName); 
+		if ($controllerReflection->hasMethod($action) ) {
+			$method = $controllerReflection->getMethod($action);
+			if ($method->isPublic()) {
+				$method->invoke($controller);
+			}
+		}elseif ($controllerReflection->hasMethod("__empty")) {
+			$controller->__empty();
+		}else{
+			throw new Exception("can not find the action!");
+		}
 		
 	}
 	
 	private function _getConfigFromFile($file){
 		if(!is_readable($file)){
-			throw new Exception("配置文件不可读！");
+			throw new Exception("configure file unreadable");
 		}
+		
 		return require_once($file);
 	}
 	
-	private function _loadLib(){
+	private function _loadLib($configs){
 		$libPath = "./Lib/";
 		
 		require_once($libPath."common.php");
 		require_once($libPath."Reg.class.php");
-		require_once($libPath."Router.class.php");
+		$this->_reg = Reg::getInstance();
+		foreach ($configs as $key => $config) {
+			$configName = "config_".$key;
+			$this->_reg->$configName = $config;
+		}
+		
+		
+		require_once($libPath."Dispatcher.class.php");
 		require_once($libPath."Model.class.php");
 		require_once($libPath."View.class.php");
 		require_once($libPath."Controller.class.php");
 		
-		$reg = Reg::getInstance();
-		$reg->name = "test";
+		
 	}
 }

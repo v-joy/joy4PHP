@@ -1,5 +1,5 @@
 <?php
-class View{
+abstract class View{
 	
 	//store view variables
 	protected $vars = array();

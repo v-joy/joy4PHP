@@ -1,4 +1,5 @@
 <?php
 return array(
-	'a'=>"demo"
+	//the following line is temporary
+	'application_path'=>"./demo"
 );
