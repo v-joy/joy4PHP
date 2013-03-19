@@ -2,9 +2,9 @@
 /**
  * 
  * author  liu.jl
- * date 2013-3-18
+ * date 2013-3-19
  *
  */
-class Model{
+class DB{
 	
 }

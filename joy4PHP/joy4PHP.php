@@ -16,7 +16,7 @@ class joy4PHP{
 			case "null":
 				break;
 			default:
-				throw new Exception("不支持该类型！");
+				throw new Exception("this type is not supported!");
 		}
 		$this->_loadLib($finalConfig);
 	}
@@ -45,6 +45,8 @@ class joy4PHP{
 			$method = $controllerReflection->getMethod($action);
 			if ($method->isPublic()) {
 				$method->invoke($controller);
+			}else{
+				throw new Exception("unable to visit this page");
 			}
 		}elseif ($controllerReflection->hasMethod("__empty")) {
 			$controller->__empty();
@@ -75,9 +77,10 @@ class joy4PHP{
 		
 		
 		require_once($libPath."Dispatcher.class.php");
+		require_once($libPath."Controller.class.php");
+		require_once($libPath."DB.class.php");
 		require_once($libPath."Model.class.php");
 		require_once($libPath."View.class.php");
-		require_once($libPath."Controller.class.php");
 		
 		
 	}
