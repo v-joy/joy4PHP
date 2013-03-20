@@ -10,7 +10,6 @@ abstract class Controller{
 	protected $view = null;
 	
 	public function __construct() {
-		D($_SERVER);
 		if (method_exists($this, "__init")) {
 			$this->__init();
 		}

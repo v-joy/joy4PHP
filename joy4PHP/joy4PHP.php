@@ -6,19 +6,24 @@ class joy4PHP{
 	public function __construct($configs=null){
 		//handle configuration
 		$configType = strtolower(gettype($configs));
-		$finalConfig = array();
+		
+		defined('JOY4PHP') || define('JOY4PHP', dirname(__FILE__).DIRECTORY_SEPARATOR);
+		$defaultConfig = require_once(JOY4PHP."Conf/Conf.php");
+		$userConfig = array();
 		switch($configType){
 			case "array":
-				$finalConfig = $configs;
+				$userConfig = $configs;
 			case "string":
-				$finalConfig = $this->_getConfigFromFile($configs);
+				$userConfig = $this->_getConfigFromFile($configs);
 				break;
 			case "null":
 				break;
 			default:
 				throw new Exception("this type is not supported!");
 		}
-		$this->_loadLib($finalConfig);
+		
+		$config = array_merge($defaultConfig,$userConfig);
+		$this->_loadLib($config);
 	}
 	
 	public function run(){
@@ -28,11 +33,11 @@ class joy4PHP{
 		//use reflaction to call requested method in class
 		$module = Dispatcher::getModule();
 		$action = Dispatcher::getAction();
-		$controllerName = $this->_reg->config_application_path."/Lib/Controllers/".$module.".class.php";
+		$controllerName = WEB_ROOT."/Lib/Controllers/".$module.".class.php";
 		if (is_file($controllerName)) {
 			require_once $controllerName;
-		}else if (is_file($this->_reg->config_application_path."/Lib/Controllers/__empty.class.php")) {
-			require_once $this->_reg->config_application_path."/Lib/Controllers/__empty.class.php";
+		}else if (is_file(WEB_ROOT."/Lib/Controllers/__empty.class.php")) {
+			require_once WEB_ROOT."/Lib/Controllers/__empty.class.php";
 			$module = "empty";
 		}else{
 			throw new Exception("can not find the controller!");
@@ -66,7 +71,7 @@ class joy4PHP{
 	}
 	
 	private function _loadLib($configs){
-		$libPath = "./Lib/";
+		$libPath = JOY4PHP."/Lib/";
 		
 		require_once($libPath."common.php");
 		require_once($libPath."Reg.class.php");
@@ -80,7 +85,12 @@ class joy4PHP{
 		require_once($libPath."Dispatcher.class.php");
 		require_once($libPath."Controller.class.php");
 		require_once($libPath."DB.class.php");
-		if (empty($this->_reg->config_db_type)) {
+		require_once($libPath."Model.class.php");
+		require_once($libPath."View.class.php");
+		
+		//use empty will always return true, why?
+		//if (empty($this->_reg->config_db_type)) {
+		if (is_null($this->_reg->config_db_type)) {
 			$this->_reg->config_db_type="mysql";
 		}
 		$dbType = ucwords(strtolower($this->_reg->config_db_type));
@@ -89,10 +99,6 @@ class joy4PHP{
 			throw new Exception($dbType." database driver is not found!");
 		}
 		require_once $dbDriverPath;
-		
-		require_once($libPath."Model.class.php");
-		require_once($libPath."View.class.php");
-		
 		
 	}
 }
