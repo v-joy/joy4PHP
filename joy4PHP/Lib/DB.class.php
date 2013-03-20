@@ -5,6 +5,37 @@
  * date 2013-3-19
  *
  */
-class DB{
+abstract class DB{
+	
+	
+	
+	public function __construct() {
+		;
+	}
+	
+	public function query($sql) {
+		;
+	}
+	
+	public function execute($sql) {
+		;
+	}
+	
+	public function insert($date) {
+		;
+	}
+	
+	public function delete($condition) {
+		;
+	}
+	public function update($date,$condition) {
+		;
+	}
+	public function select($condition) {
+		;
+	}
+	public function count($condition) {
+		;
+	}
 	
 }

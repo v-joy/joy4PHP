@@ -5,6 +5,6 @@
  * date 2013-3-18
  *
  */
-class DBMysql{
+class DBMysql extends DB{
 	
 }

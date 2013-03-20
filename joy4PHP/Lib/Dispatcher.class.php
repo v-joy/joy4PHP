@@ -12,9 +12,17 @@ class Dispatcher{
 	}
 	
 	static function dispatch() {
-		$requests = explode('/', trim($_SERVER['PATH_INFO'],"/"));
+		$pathInfo = isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:"";
+		$pathInfo = trim($pathInfo,"/");
+		$requests = explode('/', $pathInfo);
 		define("MODULE",array_shift($requests));
 		define("ACTION",array_shift($requests));
+		while (!empty($requests)) {
+			$key = array_shift($requests);
+			if (!isset($_GET[$key])) {
+				$_GET[$key] = array_shift($requests);
+			}
+		}
 	}
 	
 	static function getModule() {

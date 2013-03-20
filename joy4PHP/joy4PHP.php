@@ -41,6 +41,7 @@ class joy4PHP{
 		$controller = new $controllerClassName();
 		
 		$controllerReflection = new ReflectionClass($controllerClassName); 
+		$action.="Action";
 		if ($controllerReflection->hasMethod($action) ) {
 			$method = $controllerReflection->getMethod($action);
 			if ($method->isPublic()) {
@@ -79,6 +80,16 @@ class joy4PHP{
 		require_once($libPath."Dispatcher.class.php");
 		require_once($libPath."Controller.class.php");
 		require_once($libPath."DB.class.php");
+		if (empty($this->_reg->config_db_type)) {
+			$this->_reg->config_db_type="mysql";
+		}
+		$dbType = ucwords(strtolower($this->_reg->config_db_type));
+		$dbDriverPath = $libPath.'DB'.$dbType.'.class.php';
+		if(!is_file($dbDriverPath)){
+			throw new Exception($dbType." database driver is not found!");
+		}
+		require_once $dbDriverPath;
+		
 		require_once($libPath."Model.class.php");
 		require_once($libPath."View.class.php");
 		
