@@ -33,11 +33,11 @@ class joy4PHP{
 		//use reflaction to call requested method in class
 		$module = Dispatcher::getModule();
 		$action = Dispatcher::getAction();
-		$controllerName = WEB_ROOT."/Lib/Controllers/".$module.".class.php";
+		$controllerName = WEB_ROOT."/Controllers/".$module.".class.php";
 		if (is_file($controllerName)) {
 			require_once $controllerName;
-		}else if (is_file(WEB_ROOT."/Lib/Controllers/__empty.class.php")) {
-			require_once WEB_ROOT."/Lib/Controllers/__empty.class.php";
+		}else if (is_file(WEB_ROOT."/Controllers/__empty.class.php")) {
+			require_once WEB_ROOT."/Controllers/__empty.class.php";
 			$module = "empty";
 		}else{
 			throw new Exception("can not find the controller!");

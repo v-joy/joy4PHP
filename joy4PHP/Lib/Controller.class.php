@@ -10,13 +10,14 @@ abstract class Controller{
 	protected $view = null;
 	
 	public function __construct() {
+		$this->view = new View();
 		if (method_exists($this, "__init")) {
 			$this->__init();
 		}
 	}
 	
 	public function __destruct() {
-		D($this->isPost());
+		
 	}
 	
 	public function getPost($name){
@@ -45,6 +46,10 @@ abstract class Controller{
 	
 	public function isPost() {
 		return "post"==strtolower($_SERVER['REQUEST_METHOD']);
+	}
+	
+	public function display($path="") {
+		$this->view->display($path);
 	}
 	
 	
