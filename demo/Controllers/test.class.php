@@ -7,11 +7,10 @@ class testController extends Controller{
 			D($this->getPosts());
 			
 		}else{
-			$this->view->variable = "value";
+			$this->view->variable1 = "value";
 			$this->display();
 		}
 	}
-	
 	public function __empty() {
 		echo "we do not have the ".ACTION." action";
 	}

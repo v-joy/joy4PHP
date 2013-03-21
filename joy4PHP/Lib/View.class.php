@@ -23,15 +23,26 @@ class View{
 	}
 	
 	public function display($path=""){
-		include(WEB_ROOT."Views".DIRECTORY_SEPARATOR."test/demo".$path.".php");
-		/*
-		echo "displaying the view:".$path."<br>";
-		echo <<<EOT
-		<form method="post">
-		<input type="submit" name="submit" value="test">
-		</form>
-EOT;
-*/
+		$hasModule = strpos($path, ":");
+		$filepath = "";
+		$module = Dispatcher::getModule();
+		$action = Dispatcher::getAction();
+		if ($hasModule === false ) {
+			if (!empty($path)) {
+				$action = $path;
+			}
+		}else{
+			$module = substr($path, 0,$hasModule-1);
+			$action = substr($path, $hasModule+1);
+		}
+		$filepath = WEB_ROOT."Views".DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.$action.".php";
+		if (!is_readable($filepath)) {
+			throw new Exception("can not find the view!");
+		}
+		foreach ($this->vars as $key => $value) {
+			$$key = $value;
+		}
+		include $filepath;
 	}
 	
 	public function render($content) {
