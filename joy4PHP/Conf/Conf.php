@@ -1,5 +1,9 @@
 <?php
 return array(
-	//the following line is temporary
-	'db_type'=>"mysql"
+	//DB related
+	'db_type'=>"mysql",
+	'db_prifix'=>"",
+	'db_user'=>"",
+	'db_pwd'=>"",
+	'db_host'=>""
 );

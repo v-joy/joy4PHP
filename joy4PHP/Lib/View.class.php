@@ -32,13 +32,15 @@ class View{
 				$action = $path;
 			}
 		}else{
-			$module = substr($path, 0,$hasModule-1);
+			$module = substr($path, 0,$hasModule);
 			$action = substr($path, $hasModule+1);
 		}
 		$filepath = WEB_ROOT."Views".DIRECTORY_SEPARATOR.$module.DIRECTORY_SEPARATOR.$action.".php";
 		if (!is_readable($filepath)) {
 			throw new Exception("can not find the view!");
 		}
+		
+		//assign variables  
 		foreach ($this->vars as $key => $value) {
 			$$key = $value;
 		}

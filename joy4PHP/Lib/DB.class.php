@@ -7,6 +7,7 @@
  */
 abstract class DB{
 	
+	protected $_link = NULL;
 	
 	
 	public function __construct() {
