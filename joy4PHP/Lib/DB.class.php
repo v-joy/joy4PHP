@@ -37,6 +37,8 @@ abstract class DB{
 		;
 	}
 	
+	//protected function _parse
+	
 	public function __destruct(){
 		$this->freeResult();
 		$this->close();
