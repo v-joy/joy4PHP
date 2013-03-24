@@ -33,26 +33,27 @@ class DBMysql extends DB implements IDB{
 		if (!$this->_dbLink) {
 			throw new Exception("database is not connected!");
 		}
-		if ($this->_queryLink != false) {
-			$this->freeResult();
-		}
+		$this->freeResult();
 		$this->_queryLink = mysql_query($sql,$this->_dbLink);
-		
-		return mysql_fetch_assoc($this->_queryLink);
+		$result = array();
+		while($result[] = mysql_fetch_assoc($this->_queryLink)){};
+		//pop the false item out of $result
+		array_pop($result);
+		return $result;
 	}
 	
 	public function execute($sql) {
 		if (!$this->_dbLink) {
 			throw new Exception("database is not connected!");
 		}
-		if ($this->_queryLink != false) {
-			$this->freeResult();
-		}
+		$this->freeResult();
 		return mysql_query($sql,$this->_dbLink)!=false;
 	}
 	
 	public function freeResult(){
-		mysql_free_result($this->_queryLink);
+		if ($this->_queryLink != false) {
+			mysql_free_result($this->_queryLink);
+		}
 		$this->_queryLink = false;
 	}
 	

@@ -18,25 +18,28 @@ abstract class DB{
 		;
 	}
 	
-	public function insert($datd) {
-		;
+	public function insert($data,$table) {
+		$sql = "insert into ".$table." (".implode(",", array_keys($data)).") values (".implode(",", array_values($data)).")";
+		return $this->execute($sql);
 	}
 	
-	public function delete($condition) {
+	public function delete($condition,$table) {
+		$sql = "delete from ".$table." where ";//(".implode(",", array_keys($data)).") values (".implode(",", array_values($data)).")";
+		return $this->execute($sql);
+	}
+	public function update($data,$condition,$table) {
 		;
 	}
-	public function update($date,$condition) {
+	public function select($condition,$table) {
 		;
 	}
-	public function select($condition) {
-		;
-	}
-	public function count($condition) {
+	public function count($condition,$table) {
 		;
 	}
 	
 	public function __destruct(){
-		
+		$this->freeResult();
+		$this->close();
 	}
 	
 }
