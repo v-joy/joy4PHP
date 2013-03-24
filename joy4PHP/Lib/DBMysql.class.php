@@ -5,6 +5,59 @@
  * date 2013-3-18
  *
  */
-class DBMysql extends DB{
+class DBMysql extends DB implements IDB{
 	
+	public function __construct() {
+		$this->connect();
+	}
+	
+	public function connect($configs=array()){
+		$finalConfigs = array();
+		$map = array("host","user","pwd","name","prefix","charset");
+		foreach ($map as $item) {
+			$finalConfigs[$item] = isset($configs[$item])?$configs[$item]:Reg::get("config_db_".$item);
+		}
+		$this->_dbLink = @mysql_connect($finalConfigs["host"],$finalConfigs["user"],$finalConfigs["pwd"]);
+		if ($this->_dbLink != FALSE) {
+			mysql_select_db($finalConfigs["name"],$this->_dbLink);
+		}
+		if (mysql_errno() !==0) {
+			throw new Exception("connect to database failed:".mysql_error());
+		}
+		mysql_set_charset($finalConfigs["charset"],$this->_dbLink);
+		
+		return $this->_dbLink;
+	}
+	
+	public function query($sql) {
+		if (!$this->_dbLink) {
+			throw new Exception("database is not connected!");
+		}
+		if ($this->_queryLink != false) {
+			$this->freeResult();
+		}
+		$this->_queryLink = mysql_query($sql,$this->_dbLink);
+		
+		return mysql_fetch_assoc($this->_queryLink);
+	}
+	
+	public function execute($sql) {
+		if (!$this->_dbLink) {
+			throw new Exception("database is not connected!");
+		}
+		if ($this->_queryLink != false) {
+			$this->freeResult();
+		}
+		return mysql_query($sql,$this->_dbLink)!=false;
+	}
+	
+	public function freeResult(){
+		mysql_free_result($this->_queryLink);
+		$this->_queryLink = false;
+	}
+	
+	public function close(){
+		mysql_close($this->_dbLink);
+		$this->_dbLink = false;
+	}
 }

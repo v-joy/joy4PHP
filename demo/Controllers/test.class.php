@@ -2,6 +2,12 @@
 class testController extends Controller{
 	public function demoAction() {
 		//echo "this is module:".MODULE."; and action:".ACTION;
+		
+		$db = new DBMysql();
+		$users = $db->query("select * from user");
+		echo "this is the users :<br>";
+		D($users);
+		exit;
 		if ($this->isPost()) {
 			$data = new stdClass();
 			$data->name = $this->getPost("name");

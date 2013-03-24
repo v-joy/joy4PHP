@@ -5,24 +5,20 @@
  * date 2013-3-19
  *
  */
+require_once JOY4PHP."/Lib/"."DBInterface.php";
 abstract class DB{
 	
-	protected $_link = NULL;
+	protected $_dbLink = false;
 	
+	protected $_queryLink = false;
 	
+	protected $_sqls = array();
+
 	public function __construct() {
 		;
 	}
 	
-	public function query($sql) {
-		;
-	}
-	
-	public function execute($sql) {
-		;
-	}
-	
-	public function insert($date) {
+	public function insert($datd) {
 		;
 	}
 	
@@ -37,6 +33,10 @@ abstract class DB{
 	}
 	public function count($condition) {
 		;
+	}
+	
+	public function __destruct(){
+		
 	}
 	
 }
