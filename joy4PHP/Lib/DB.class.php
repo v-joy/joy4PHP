@@ -24,7 +24,7 @@ abstract class DB{
 	}
 	
 	public function delete($condition,$table) {
-		$sql = "delete from ".$table." where ";//(".implode(",", array_keys($data)).") values (".implode(",", array_values($data)).")";
+		$sql = "delete from ".$table." where (".$this->_parseCondition($condition).")";		
 		return $this->execute($sql);
 	}
 	public function update($data,$condition,$table) {
@@ -37,7 +37,23 @@ abstract class DB{
 		;
 	}
 	
-	//protected function _parse
+	protected function _parseCondition($condition){
+		$sql = "";
+		if (is_object($condition)) {
+			$condition = get_object_vars($condition);
+		}
+		if (is_array($condition)) {
+			foreach ($condition as $key => $value) {
+				$sql .= "and $key = $value ";
+			}
+			$sql = substr($sql, 4);
+		}elseif (is_string($condition)){
+			$sql = $condition;
+		}else{
+			throw new Exception("unsupported data type");
+		}
+		return $sql;
+	}
 	
 	public function __destruct(){
 		$this->freeResult();

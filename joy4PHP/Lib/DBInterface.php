@@ -1,5 +1,5 @@
 <?php
-//do I really need a db interface?
+//Database drivers must impliment this interface
 interface IDB{
 	public function connect();
 	
