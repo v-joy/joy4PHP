@@ -28,13 +28,17 @@ abstract class DB{
 		return $this->execute($sql);
 	}
 	public function update($data,$condition,$table) {
-		;
+		//$sql = "update ".$table." where (".$this->_parseCondition($condition).")";
+		//return $this->execute($sql);
 	}
 	public function select($condition,$table) {
-		;
+		$sql = "select * from ".$table." where (".$this->_parseCondition($condition).")";		
+		return $this->query($sql);
 	}
 	public function count($condition,$table) {
-		;
+		$sql = "select count(*) as totlenum from ".$table." where (".$this->_parseCondition($condition).")";		
+		$result = $this->query($sql);
+		return $result[0]["totlenum"];
 	}
 	
 	protected function _parseCondition($condition){

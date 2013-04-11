@@ -1,5 +1,6 @@
 <?php
 //this is a test file
+header("Content-type: text/html; charset=utf-8"); 
 define('JOY4PHP', dirname(__FILE__).DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."joy4PHP".DIRECTORY_SEPARATOR);
 require_once JOY4PHP."joy4PHP.php";
 // temp func , for writting less letter

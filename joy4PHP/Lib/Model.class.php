@@ -30,6 +30,14 @@ class Model{
 		return $this->_db->insert($data,$this->_table);
 	}
 	
+	public function execute($sql){
+		return $this->_db->execute($sql);
+	}
+	
+	public function query($sql){
+		return $this->_db->query($sql);
+	}
+	
 	public function delete($condition) {
 		return $this->_db->delete($condition,$this->_table);
 	}

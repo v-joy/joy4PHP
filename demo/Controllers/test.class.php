@@ -1,9 +1,6 @@
 <?php
 class testController extends Controller{
 	public function demoAction() {
-		//echo "this is module:".MODULE."; and action:".ACTION;
-		
-		
 		if ($this->isPost()) {
 			$data = array();
 			$data["name"] = $this->getPost("name");
@@ -15,12 +12,26 @@ class testController extends Controller{
 			}else{
 				$this->display("system:error");
 			}
-			
 		}else{
 			$this->view->title = "this is assigned in View";
 			$this->display();
 		}
 	}
+	
+	//test count 
+	public function countAction() {
+		if ($this->isPost()) {
+			$data = array();
+			$data["name"] = $this->getPost("name");
+			$user = new Model("user");
+			$result = $user->count($data);
+			echo "there are {$result} users matched.";
+		}else{
+			$this->view->title = "this is assigned in View";
+			$this->display();
+		}
+	}
+	
 	public function __empty() {
 		echo "we do not have the ".ACTION." action";
 	}
