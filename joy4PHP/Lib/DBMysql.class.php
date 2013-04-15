@@ -10,7 +10,6 @@ class DBMysql extends DB implements IDB{
 	public function __construct() {
 		$this->connect();
 	}
-	
 	public function connect($configs=array()){
 		$finalConfigs = array();
 		$map = array("host","user","pwd","name","prefix","charset");
@@ -33,6 +32,7 @@ class DBMysql extends DB implements IDB{
 		if (!$this->_dbLink) {
 			throw new Exception("database is not connected!");
 		}
+		$this->_sqls[] = $sql;
 		$this->freeResult();
 		$this->_queryLink = mysql_query($sql,$this->_dbLink);
 		$result = array();
@@ -46,6 +46,7 @@ class DBMysql extends DB implements IDB{
 		if (!$this->_dbLink) {
 			throw new Exception("database is not connected!");
 		}
+		$this->_sqls[] = $sql;
 		$this->freeResult();
 		return mysql_query($sql,$this->_dbLink)!=false;
 	}
@@ -55,6 +56,21 @@ class DBMysql extends DB implements IDB{
 			mysql_free_result($this->_queryLink);
 		}
 		$this->_queryLink = false;
+	}
+	
+	public function log($type="text"){
+		
+		switch($type){
+			case "text":
+				return "sqls:".implode(",",$this->_sqls).";error:".mysql_error($this->_dbLink);
+				break;
+			case "array":
+				$log=array();
+				$log["sqls"]= $this->_sqls;
+				$log["error"]=mysql_error($this->_dbLink);
+				return $log;
+				break;
+		}
 	}
 	
 	public function close(){

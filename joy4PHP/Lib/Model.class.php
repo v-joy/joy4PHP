@@ -38,6 +38,10 @@ class Model{
 		return $this->_db->query($sql);
 	}
 	
+	public function logDb($type="text"){
+		return $this->_db->log($type);
+	}
+	
 	public function delete($condition) {
 		return $this->_db->delete($condition,$this->_table);
 	}

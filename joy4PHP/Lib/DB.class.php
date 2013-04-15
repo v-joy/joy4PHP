@@ -13,6 +13,7 @@ abstract class DB{
 	protected $_queryLink = false;
 	
 	protected $_sqls = array();
+	
 
 	public function __construct() {
 		;

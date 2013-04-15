@@ -28,6 +28,7 @@ class testController extends Controller{
 			//require_once WEB_ROOT.DIRECTORY_SEPARATOR."Models".DIRECTORY_SEPARATOR."User.php";
 			$user = new Model("user");
 			if($user->update($data,"id=1")){
+				D($user->logDb());
 				$this->display("system:success");
 			}else{
 				$this->display("system:error");

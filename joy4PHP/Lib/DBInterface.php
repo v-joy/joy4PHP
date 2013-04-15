@@ -9,6 +9,8 @@ interface IDB{
 	
 	public function freeResult();
 	
+	public function log();
+	
 	public function close();
 	
 }
