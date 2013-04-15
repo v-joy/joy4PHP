@@ -19,7 +19,8 @@ abstract class DB{
 	}
 	
 	public function insert($data,$table) {
-		$sql = "insert into ".$table." (".implode(",", array_keys($data)).") values (".implode(",", array_values($data)).")";
+		$sql = "insert into ".$table." (".implode(",", array_keys($data)).") values ('".implode("','", array_values($data))."')";
+		//echo $sql;return;
 		return $this->execute($sql);
 	}
 	
@@ -28,8 +29,17 @@ abstract class DB{
 		return $this->execute($sql);
 	}
 	public function update($data,$condition,$table) {
-		//$sql = "update ".$table." where (".$this->_parseCondition($condition).")";
-		//return $this->execute($sql);
+		$setsql = "";
+		foreach($data as $key=>$value){
+			$setsql.=$key."='".$value."',";
+		}
+		$setsql = rtrim($setsql,",");
+		if(empty($setsql)){
+			return true;
+		}else{
+			$sql = "update ".$table." set {$setsql} where (".$this->_parseCondition($condition).")";
+			return $this->execute($sql);
+		}
 	}
 	public function select($condition,$table) {
 		$sql = "select * from ".$table." where (".$this->_parseCondition($condition).")";		
@@ -48,7 +58,7 @@ abstract class DB{
 		}
 		if (is_array($condition)) {
 			foreach ($condition as $key => $value) {
-				$sql .= "and $key = $value ";
+				$sql .= "and $key = \"$value\" ";
 			}
 			$sql = substr($sql, 4);
 		}elseif (is_string($condition)){

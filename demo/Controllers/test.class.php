@@ -5,9 +5,29 @@ class testController extends Controller{
 			$data = array();
 			$data["name"] = $this->getPost("name");
 			$data["pwd"]= $this->getPost("pwd");
+			$data["age"]= $this->getPost("age");
 			//require_once WEB_ROOT.DIRECTORY_SEPARATOR."Models".DIRECTORY_SEPARATOR."User.php";
 			$user = new Model("user");
 			if($user->insert($data)){
+				$this->display("system:success");
+			}else{
+				$this->display("system:error");
+			}
+		}else{
+			$this->view->title = "this is assigned in View";
+			$this->display();
+		}
+	}
+	
+	public function updateAction() {
+		if ($this->isPost()) {
+			$data = array();
+			$data["name"] = $this->getPost("name");
+			$data["pwd"]= $this->getPost("pwd");
+			$data["age"]= $this->getPost("age");
+			//require_once WEB_ROOT.DIRECTORY_SEPARATOR."Models".DIRECTORY_SEPARATOR."User.php";
+			$user = new Model("user");
+			if($user->update($data,"id=1")){
 				$this->display("system:success");
 			}else{
 				$this->display("system:error");
