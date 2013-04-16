@@ -53,6 +53,10 @@ class testController extends Controller{
 		}
 	}
 	
+	public function logAction(){
+		Log::write("test");
+	}
+	
 	public function __empty() {
 		echo "we do not have the ".ACTION." action";
 	}

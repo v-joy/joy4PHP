@@ -75,6 +75,7 @@ class joy4PHP{
 		
 		require_once($libPath."common.php");
 		require_once($libPath."Reg.class.php");
+		require_once($libPath."Log.class.php");
 		//$this->_reg = Reg::getInstance();
 		foreach ($configs as $key => $config) {
 			$configName = "config_".$key;
