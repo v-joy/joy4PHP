@@ -54,7 +54,10 @@ class testController extends Controller{
 	}
 	
 	public function logAction(){
-		Log::write("test");
+		Log::write("this will not be loged ","info");
+		Log::record("this will be loged","error");
+		Log::record("this will not be loged  either","warning");
+		Log::save();
 	}
 	
 	public function __empty() {
