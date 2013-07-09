@@ -42,16 +42,16 @@ class Model{
 		return $this->_db->log($type);
 	}
 	
-	public function delete($condition) {
+	public function delete($condition=null) {
 		return $this->_db->delete($condition,$this->_table);
 	}
-	public function update($data,$condition) {
+	public function update($data,$condition=null) {
 		return $this->_db->update($data,$condition,$this->_table);
 	}
-	public function select($condition) {
-		return $this->_db->select($condition,$this->_table);
+	public function select($condition=null) {
+		return $this->_db->select($condition=null,$this->_table);
 	}
-	public function count($condition) {
+	public function count($condition=null) {
 		return $this->_db->count($condition,$this->_table);
 	}
 }

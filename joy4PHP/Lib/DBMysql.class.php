@@ -74,7 +74,9 @@ class DBMysql extends DB implements IDB{
 	}
 	
 	public function close(){
+		if(is_resource($this->_dbLink)){
 		mysql_close($this->_dbLink);
+		}
 		$this->_dbLink = false;
 	}
 }

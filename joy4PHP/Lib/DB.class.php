@@ -25,11 +25,12 @@ abstract class DB{
 		return $this->execute($sql);
 	}
 	
-	public function delete($condition,$table) {
-		$sql = "delete from ".$table." where (".$this->_parseCondition($condition).")";		
+	public function delete($condition=null,$table) {
+		$sql = "delete from ".$table;
+		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
 		return $this->execute($sql);
 	}
-	public function update($data,$condition,$table) {
+	public function update($data,$condition=null,$table) {
 		$setsql = "";
 		foreach($data as $key=>$value){
 			$setsql.=$key."='".$value."',";
@@ -38,16 +39,19 @@ abstract class DB{
 		if(empty($setsql)){
 			return true;
 		}else{
-			$sql = "update ".$table." set {$setsql} where (".$this->_parseCondition($condition).")";
+			$sql = "update ".$table." set {$setsql}";
+			if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";
 			return $this->execute($sql);
 		}
 	}
-	public function select($condition,$table) {
-		$sql = "select * from ".$table." where (".$this->_parseCondition($condition).")";		
+	public function select($condition=null,$table) {
+		$sql = "select * from ".$table;
+		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
 		return $this->query($sql);
 	}
-	public function count($condition,$table) {
-		$sql = "select count(*) as totlenum from ".$table." where (".$this->_parseCondition($condition).")";		
+	public function count($condition=null,$table) {
+		$sql = "select count(*) as totlenum from ".$table;
+		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
 		$result = $this->query($sql);
 		return $result[0]["totlenum"];
 	}

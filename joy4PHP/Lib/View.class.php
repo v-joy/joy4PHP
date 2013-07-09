@@ -10,7 +10,11 @@ class View{
 	//store view variables
 	protected $vars = array();
 	
+	protected $base_path="";
 	
+	public function __construct(){
+		$this->base_path = dirname($_SERVER["SCRIPT_NAME"]);
+	}
 	
 	//assign view variable
 	public function __set($name,$value){
@@ -54,7 +58,7 @@ class View{
 	public function css($files,$realpath=null){
 		
 		if(is_null($realpath)){
-			$realpath = dirname($_SERVER["SCRIPT_NAME"])."/Public/css/";
+			$realpath = $this->base_path."/Public/css/";
 		}
 		if(!is_array($files)){
 			$files = array($files);
@@ -65,12 +69,16 @@ class View{
 	public function js($files,$realpath=null){
 		
 		if(is_null($realpath)){
-			$realpath = dirname($_SERVER["SCRIPT_NAME"])."/Public/js/";
+			$realpath = $this->base_path."/Public/js/";
 		}
 		if(!is_array($files)){
 			$files = array($files);
 		}
 		foreach($files as $file) echo '<script type="text/javascript" src="'.$realpath.$file.'.js"></script>';
+	}
+	
+	public function getActionUrl(){
+		return $_SERVER["SCRIPT_NAME"]."/".Dispatcher::getModule()."/".Dispatcher::getAction();
 	}
 	
 }

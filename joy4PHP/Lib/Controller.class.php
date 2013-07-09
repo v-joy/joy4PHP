@@ -21,17 +21,17 @@ abstract class Controller{
 	}
 	
 	public function getPost($name){
-		return isset($_POST[$name])?$_POST[$name]:false;
+		return isset($_POST[$name])?$_POST[$name]:null;
 	}
 	
 	public function getGet($name){
-		return isset($_GET[$name])?$_GET[$name]:false;
+		return isset($_GET[$name])?$_GET[$name]:null;
 	}
 	
 	public function getparam($name){
-		$result = isset($_POST[$name])?$_POST[$name]:false;
+		$result = isset($_POST[$name])?$_POST[$name]:null;
 		if (!$result) {
-			$result = isset($_GET[$name])?$_GET[$name]:false;
+			$result = isset($_GET[$name])?$_GET[$name]:null;
 		}
 		return $result;
 	}
@@ -52,5 +52,9 @@ abstract class Controller{
 		$this->view->display($path);
 	}
 	
+	public function error($msg){
+		//mark:todo
+		throw new Exception($msg);
+	}
 	
 }
