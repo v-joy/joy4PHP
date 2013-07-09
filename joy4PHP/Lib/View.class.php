@@ -50,4 +50,27 @@ class View{
 	public function render($content) {
 		echo $content;
 	}
+	
+	public function css($files,$realpath=null){
+		
+		if(is_null($realpath)){
+			$realpath = dirname($_SERVER["SCRIPT_NAME"])."/Public/css/";
+		}
+		if(!is_array($files)){
+			$files = array($files);
+		}
+		foreach($files as $file) echo '<link type="text/css" rel="stylesheet" href="'.$realpath.$file.'.css" />';
+	}
+	
+	public function js($files,$realpath=null){
+		
+		if(is_null($realpath)){
+			$realpath = dirname($_SERVER["SCRIPT_NAME"])."/Public/js/";
+		}
+		if(!is_array($files)){
+			$files = array($files);
+		}
+		foreach($files as $file) echo '<script type="text/javascript" src="'.$realpath.$file.'.js"></script>';
+	}
+	
 }

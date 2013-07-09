@@ -22,7 +22,7 @@ class Model{
 		if(!is_null($table)){
 			$this->_table = $table;
 		}
-		$dbType = ucwords(strtolower(Reg::get('config_db_type')));
+		$dbType = ucwords(strtolower(Reg::get('db_type')));
 		$dbName = "DB".$dbType;
 		$this->_db = new $dbName();
 	}

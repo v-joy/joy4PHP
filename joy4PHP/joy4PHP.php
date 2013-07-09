@@ -91,10 +91,10 @@ class joy4PHP{
 		
 		//use empty will always return true, why?
 		//if (empty($this->_reg->config_db_type)) {
-		if (is_null(Reg::get('config_db_type'))) {
-			Reg::set('config_db_type', 'mysql');
+		if (is_null(Reg::get('db_type'))) {
+			Reg::set('db_type', 'mysql');
 		}
-		$dbType = ucwords(strtolower(Reg::get('config_db_type')));
+		$dbType = ucwords(strtolower(Reg::get('db_type')));
 		$dbDriverPath = $libPath.'DB'.$dbType.'.class.php';
 		if(!is_file($dbDriverPath)){
 			throw new Exception($dbType." database driver is not found!");

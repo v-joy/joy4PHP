@@ -4,7 +4,7 @@ class Log{
 	static $logs = array();
 	
 	static function record($message=NULL,$level=NULL){
-		$level= $level?$level:Reg::get("config_log_level");
+		$level= $level?$level:Reg::get("log_level");
 		if(!self::checkLevel($level)){
 			return false;
 		}
@@ -16,7 +16,7 @@ class Log{
 		$message_type = self::getType($message_type);
 		if($message_type==3){
 			if(empty($destination)){
-				$destination = Reg::get("config_log_destination")."log_".date("Y-m-d").".log";
+				$destination = Reg::get("log_destination")."log_".date("Y-m-d").".log";
 			}
 			self::checkPath($destination);
 		}
@@ -26,7 +26,7 @@ class Log{
 	static function write($message=null , $level=null, $message_type = 3 , $destination=null , $extra_headers=null ){
 		if(!$message)return;
 		
-		$level= $level?$level:Reg::get("config_log_level");
+		$level= $level?$level:Reg::get("log_level");
 	if(!self::checkLevel($level)){
 			return false;
 		}
@@ -35,7 +35,7 @@ class Log{
 		//3 means file
 		if($message_type==3){
 			if(empty($destination)){
-				$destination = Reg::get("config_log_destination")."log_".date("Y-m-d").".log";
+				$destination = Reg::get("log_destination")."log_".date("Y-m-d").".log";
 			}
 			self::checkPath($destination);
 		}
@@ -60,7 +60,7 @@ class Log{
 	}
 	
 	static function getType($message_type){
-		$message_type = $message_type?$message_type:Reg::get("config_log_type");
+		$message_type = $message_type?$message_type:Reg::get("log_type");
 		$message_type = strtolower($message_type);
 		$code = 3;
 		switch($message_type){
@@ -92,7 +92,7 @@ class Log{
 		if($level=="none" || !isset($levels[$level])){
 			return false;
 		}
-		$configLeval = Reg::get("config_log_level");
+		$configLeval = Reg::get("log_level");
 		if( $levels[$level] >= $levels[$configLeval]){
 			return true;
 		}else{

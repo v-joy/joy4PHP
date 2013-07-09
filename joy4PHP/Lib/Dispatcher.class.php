@@ -26,10 +26,19 @@ class Dispatcher{
 	}
 	
 	static function getModule() {
-		return MODULE?MODULE:"empty";
+		
+		if(MODULE!= null && MODULE!= ""){
+			return MODULE;
+		}else{
+			return Reg::get("default_module");
+		}
 	}
 	
 	static function getAction() {
-		return ACTION?ACTION:"empty";
+		if(ACTION!= null && ACTION!= ""){
+			return ACTION;
+		}else{//default_action
+			return Reg::get("default_action");
+		}
 	}
 }

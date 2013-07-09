@@ -14,7 +14,7 @@ class DBMysql extends DB implements IDB{
 		$finalConfigs = array();
 		$map = array("host","user","pwd","name","prefix","charset");
 		foreach ($map as $item) {
-			$finalConfigs[$item] = isset($configs[$item])?$configs[$item]:Reg::get("config_db_".$item);
+			$finalConfigs[$item] = isset($configs[$item])?$configs[$item]:Reg::get("db_".$item);
 		}
 		$this->_dbLink = @mysql_connect($finalConfigs["host"],$finalConfigs["user"],$finalConfigs["pwd"]);
 		if ($this->_dbLink != FALSE) {
