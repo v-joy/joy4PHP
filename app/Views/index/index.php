@@ -4,7 +4,7 @@
 <title>PXE数据库管理</title>
 <?php
 $this->css(array("base","changelists"));
-$this->js(array("jquery.min"));
+$this->js(array("jquery.min","util"));
 ?>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/media/css/ie.css" /><![endif]-->
 <script type="text/javascript">
@@ -32,7 +32,7 @@ $(document).ready(function(e) {
     <div id="branding">
       <h1 id="site-name">PXE数据库管理</h1>
     </div>
-    <div id="user-tools"> 欢迎， <strong>cong.pu</strong>. <a href="/password_change/"> 修改密码</a> / <a href="/logout/"> 注销</a> </div>
+    <div id="user-tools"> 欢迎， <strong>admin</strong>. <a href="<?php echo $this->getModuleUrl()?>/changpwd"> 修改密码</a> / <a href="<?php echo $this->getIndexUrl()?>/login/logout/"> 注销</a> </div>
   </div>
   <!-- END Header -->
   
@@ -47,7 +47,7 @@ $(document).ready(function(e) {
       </ul>-->
       <div class="module" id="changelist">
         <!--<div id="toolbar">
-          <form id="changelist-search" action="" method="get">
+          <form id="changelist-search" action="" method="post">
             <div>
               <label for="searchbar"><img src="<?php echo $this->base_path;?>/Public/img/icon_searchbox.png" alt="Search" /></label>
               <input type="text" size="40" name="q" value="" id="searchbar" />
@@ -72,20 +72,36 @@ $(document).ready(function(e) {
             <!--<button type="submit" class="button" title="Run the selected action" name="index" value="0">执行</button>-->
 <?php if(is_array($this->columns)){$columns = $this->columns; ?>
 			共 <?php echo $this->count; ?> 条记录
+              <!--<label for="searchbar"><img src="<?php echo $this->base_path;?>/Public/img/icon_searchbox.png" alt="Search" /></label>
+              <input type="text" size="40" name="q" value="" id="searchbar" />
+              <input type="submit" value="搜索" />-->
+              <span style="margin:auto 50px auto 100px;">操作列表：</span>
+              <input type="button" id="selectAllAction" value="全选" />
+              <input type="button" id="selectNoneAction" value="全不选" />
+              <input type="button" id="deleteAction" value="删除" />
+              <input type="button" id="addAction" value="增加" />
+              <input type="button" id="updateAction" value="修改" />
           <table cellspacing="0" id="result_list">
             <thead>
               <tr>
                 <th class="action-checkbox-column"> <input type="checkbox" id="action-toggle" /></th>
-<?php foreach($columns as $column){
+<?php 
+$primary_key = "id";
+foreach($columns as $column){
 	echo "<th> <a > ".$column['Field']." </a></th>";
+	if($column["Key"]=="PRI"){
+		$primary_key = $column['Field'];
+	}
 }?>
               </tr>
             </thead>
             <tbody>
             	<tr class="row2">
                 	 <td class="action-checkbox"></td>
-<?php foreach($columns as $column){
+<?php 
+foreach($columns as $column){
 					  echo "<td> <a > ".$column['Type']."</a></th>";
+					  
 }?>
                 </tr>
  <?php 
@@ -93,7 +109,7 @@ $(document).ready(function(e) {
 		$i=0;
  		foreach($data as $row){$i++;?>
   				<tr class="row<?php echo $i%2;?>">
-                <td class="action-checkbox"><input type="checkbox" class="action-select" value="15" name="_selected_action" /></td>
+                <td class="action-checkbox"><input type="checkbox" class="action-select" value="<?php echo $row[$primary_key]?>" name="_selected_checkbox" /></td>
                 <?php foreach($row as $feild){
 					echo "<td> <a > ".$feild." </a></td>"; 
 				}?>
@@ -102,7 +118,7 @@ $(document).ready(function(e) {
             </tbody>
           </table>
           <?php }else{echo "请选择数据表";}?>
-          <p class="paginator"> <分页处> </p>
+          <p class="paginator">  共有 <?php echo $this->page_total?> 页 < <?php for($page=1;$page<=$this->page_total;$page++) echo "<a href=\"".$this->getActionUrl()."?table=".$_GET["table"]."&page={$page}\" >{$page}</a> "; ?> ></p>
         </form>
       </div>
     </div>

@@ -6,8 +6,6 @@
 $this->css(array("base","login"));
 ?>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/media/css/ie.css" /><![endif]-->
-
-<script type="text/javascript">window.__admin_media_prefix__ = "/media/";</script>
 <meta name="robots" content="NONE,NOARCHIVE" />
 </head>
 
@@ -26,10 +24,7 @@ $this->css(array("base","login"));
   <!-- Content -->
   <div id="content" class="colM">
     <div id="content-main">
-      <form action="/" method="post" id="login-form">
-        <div style='display:none'>
-          <input type='hidden' name='csrfmiddlewaretoken' value='5e36c6579343a4e605a00a72b00993f4' />
-        </div>
+      <form method="post" id="login-form">
         <div class="form-row">
           <label for="id_username">用户名：</label>
           <input type="text" name="username" id="id_username" />
@@ -37,7 +32,6 @@ $this->css(array("base","login"));
         <div class="form-row">
           <label for="id_password">密码：</label>
           <input type="password" name="password" id="id_password" />
-          <input type="hidden" name="this_is_the_login_form" value="1" />
         </div>
         <div class="submit-row">
           <label>&nbsp;</label>

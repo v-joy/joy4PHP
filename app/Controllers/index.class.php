@@ -1,8 +1,12 @@
 <?php
 class indexController extends Controller{
 	public function indexAction(){
-		if(!$_SESSION["user_id"]){
-			header("Location");
+		
+		if(!isset($_SESSION["username"])){
+			redirect("http://".$_SERVER['HTTP_HOST'].$this->view->getIndexUrl()."/login");
+		}
+		if($this->getPost("action")){
+			print_r($this->getPosts());exit;
 		}
 		$model = new Model();
 		$tables = $model->query("show tables");
@@ -10,7 +14,7 @@ class indexController extends Controller{
 		if(is_array($tables)){
 			foreach($tables as $table){
 				foreach($table as $table_name){
-					$tables_value[] = $table_name;
+					$tables_value[] = $table_name+",";
 				}
 			}
 		}else{
@@ -35,15 +39,16 @@ class indexController extends Controller{
 			}else{
 				$page = 1;
 			}
-			
+			$begin_num = $page_size*($page-1);
+			$this->view->page_total =  ceil($count/$page_size);
 			$this->view->count = $count;
-			$this->view->data = $table_model->select();
+			$this->view->data = $table_model->query("select * from {$selected_table} limit {$begin_num},{$page_size}");
 		}
 		$this->view->dbname = Reg::get("db_name");
 		$this->display();
 	}
 	
-	public function login(){
+	public function changpwdAction(){
 		
 	}
 }

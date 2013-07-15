@@ -4,7 +4,7 @@ return array(
 	'db_host'=>"localhost",
 	'db_user'=>"root",
 	'db_pwd'=>"",
-	'db_name'=>"qms",
+	'db_name'=>"pxe",
 	'db_prefix'=>"",
 	'db_charset'=>"utf8",
 	
