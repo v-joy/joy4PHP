@@ -81,4 +81,12 @@ class View{
 		return $_SERVER["SCRIPT_NAME"]."/".Dispatcher::getModule()."/".Dispatcher::getAction();
 	}
 	
+	public function getModuleUrl(){
+		return $_SERVER["SCRIPT_NAME"]."/".Dispatcher::getModule();
+	}
+	
+	public function getIndexUrl(){
+		return $_SERVER["SCRIPT_NAME"];
+	}
+	
 }

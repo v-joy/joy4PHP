@@ -20,11 +20,17 @@ abstract class Controller{
 		
 	}
 	
-	public function getPost($name){
+	public function getPost($name=null){
+		if(is_null($name)){
+			return $this->getPosts();
+		}
 		return isset($_POST[$name])?$_POST[$name]:null;
 	}
 	
-	public function getGet($name){
+	public function getGet($name=null){
+		if(is_null($name)){
+			return $this->getGets();
+		}
 		return isset($_GET[$name])?$_GET[$name]:null;
 	}
 	

@@ -6,3 +6,7 @@ function D($var,$halt=FALSE) {
 		exit();
 	}
 }
+
+function redirect($url){
+	return header('Location: '.$url);
+}

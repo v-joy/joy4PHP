@@ -22,7 +22,7 @@ abstract class DB{
 	public function insert($data,$table) {
 		$sql = "insert into ".$table." (".implode(",", array_keys($data)).") values ('".implode("','", array_values($data))."')";
 		//echo $sql;return;
-		return $this->execute($sql);
+		return $this->execute($sql)?$this->getNewID():false;
 	}
 	
 	public function delete($condition=null,$table) {
@@ -46,7 +46,7 @@ abstract class DB{
 	}
 	public function select($condition=null,$table) {
 		$sql = "select * from ".$table;
-		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
+		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";	
 		return $this->query($sql);
 	}
 	public function count($condition=null,$table) {

@@ -79,4 +79,8 @@ class DBMysql extends DB implements IDB{
 		}
 		$this->_dbLink = false;
 	}
+	
+	public function getNewID(){
+		return mysql_insert_id();
+	}
 }

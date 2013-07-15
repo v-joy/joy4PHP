@@ -30,6 +30,10 @@ class Model{
 		return $this->_db->insert($data,$this->_table);
 	}
 	
+	public function add($data){
+		return $this->insert($data);
+	}
+	
 	public function execute($sql){
 		return $this->_db->execute($sql);
 	}
@@ -49,7 +53,7 @@ class Model{
 		return $this->_db->update($data,$condition,$this->_table);
 	}
 	public function select($condition=null) {
-		return $this->_db->select($condition=null,$this->_table);
+		return $this->_db->select($condition,$this->_table);
 	}
 	public function count($condition=null) {
 		return $this->_db->count($condition,$this->_table);

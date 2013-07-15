@@ -13,4 +13,6 @@ interface IDB{
 	
 	public function close();
 	
+	public function getNewID();
+	
 }
