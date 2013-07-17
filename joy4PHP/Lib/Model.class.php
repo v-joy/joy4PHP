@@ -20,7 +20,7 @@ class Model{
 			$this->_prefix = $prefix;
 		}
 		if(!is_null($table)){
-			$this->_table = $table;
+			$this->_table = $this->_prefix.$table;
 		}
 		$dbType = ucwords(strtolower(Reg::get('db_type')));
 		$dbName = "DB".$dbType;
