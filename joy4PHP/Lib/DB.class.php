@@ -32,10 +32,14 @@ abstract class DB{
 	}
 	public function update($data,$condition=null,$table) {
 		$setsql = "";
-		foreach($data as $key=>$value){
-			$setsql.=$key."='".$value."',";
+		if(is_array($data)){
+			foreach($data as $key=>$value){
+				$setsql.=$key."='".$value."',";
+			}
+			$setsql = rtrim($setsql,",");
+		}else{
+			$setsql = $data;
 		}
-		$setsql = rtrim($setsql,",");
 		if(empty($setsql)){
 			return true;
 		}else{

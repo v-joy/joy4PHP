@@ -8,124 +8,17 @@ $this->js(array("jquery.min","util"));
 ?>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/media/css/ie.css" /><![endif]-->
 <script type="text/javascript">
+curent_table = "";
+module_url="<?php echo $this->getModuleUrl()?>";
+action_url="<?php echo $this->getActionUrl()?>";
 $(document).ready(function(e) {
-    var curent_table = "<?php echo $_GET["table"];?>";
+	curent_table = "<?php echo $_GET["table"];?>";
 	if(curent_table!=""){
 		$("#table_list").val(curent_table);
 	}
-	
-	$("#table_list").change(function(elem){
-		var table_selected = $(this).val();
-		if(table_selected!=""){
-			window.location.href = "<?php echo $this->getActionUrl() ?>?table="+table_selected;
-		}
-	});
-	
-	$("#result_list tr td").dblclick(function(e) {
-        var $this_td = $(this);
-		var old_html = $this_td.children("a").html();
-		if(old_html!=null){
-			$this_td.html("<input class='updating_td'  old_data='"+old_html+"' value='"+old_html+"' onblur='update_td(this)' />");
-			$(".updating_td").focus();
-		}
-    });
-	
-	$("#notice_close").click(function(){
-	notice_end();
-	});
 
 });
-function update_td(elem){
-	var $elem = $(elem);
-	if($elem.attr("old_data")==$elem.val()){
-		td_recover("back");
-	}else{
-		if(window.confirm("确定要修改吗？")){
-			//更新数据。。。。。
-			var pri = $elem.parent().parent().attr("id").substr(3);
-			var i=-1;
-			var $pre = $elem.parent();
-			while($pre.is("td") && i<100){
-				i++;
-				$pre = $pre.prev();
-			}
-			if(i>=100 || i<0){
-				show_error("出现错误！请想编码人员反馈！");
-				return;
-			}
-			var r_key = $("#result_list th").eq(i).children().html();
-			var r_val = $elem.val();
-			update_record(r_key,r_val,pri);
-		}else{
-			td_recover("back");
-		}
-	}
-}
-function update_record(r_key,r_val,pri){
-	
-	var data = new Object();
-	data.key = r_key;
-	data.val = r_val;
-	data.pri_key = window.primaryKey?window.primaryKey:"id";
-	data.pri_val = pri;
-	data.action = "update";
-	var url = window.location.href;
-	$.post(
-		url,
-		data,
-		function(return_data){
-			//notice(return_data);return;
-			if(return_data.success){
-				td_recover("update");
-			}else{
-				show_error("更新失败！");
-				td_recover("back");
-			}
-		},
-		"json"
-	);
-}
-function td_recover(type){
-	//type 为 update 或者back
-	var $input = $(".updating_td");
-	var $td = $input.parent();
-	var html_content;
-	if(type=="update"){
-		html_content=$input.val();
-	}else{
-		html_content=$input.attr("old_data")
-	}
-	$td.html("<a>"+html_content+"</a>");
-}
 
-//弹出隐藏层
-function notice(msg,type){
-	if(typeof(type)=="undefined" || type=="message"){
-		type="message";
-		$("#notice_content").html(msg);
-	}else if(type=="url"){
-		$("#notice_content").html("加载中。。。。");
-	}
-	$("#notice_bg").fadeTo(500,0.7);
-	$("#notice_main").slideDown();
-	$("#notice_bg").height($(document).height()).width($(document).width());
-	
-	if(type=="url"){
-		$.post(msg,function(data){
-			window.setTimeout(function(){
-				$("#notice_content").html(data);
-			},500);
-		});
-	}
-	return false;
-};
-//关闭弹出层
-function notice_end(){
-	$("#notice_content").html("");
-	$("#notice_main").slideUp(500);
-	$("#notice_bg").fadeOut(500);
-	return false;
-}
 
 </script>
 <meta name="robots" content="NONE,NOARCHIVE" />
@@ -139,7 +32,7 @@ function notice_end(){
   <div id="branding">
     <h1 id="site-name">PXE数据库管理</h1>
   </div>
-  <div id="user-tools"> 欢迎， <strong>admin</strong>. <a onclick="return notice('<?php echo $this->getModuleUrl()?>/changepwd','url')" style="cursor:pointer; color:white;"> 修改密码</a> / <a href="<?php echo $this->getIndexUrl()?>/login/logout/"> 注销</a> </div>
+  <div id="user-tools"> 欢迎， <strong>admin</strong>. <a onclick="return load_page('<?php echo $this->getModuleUrl()?>/changepwd')" style="cursor:pointer; color:white;"> 修改密码</a> / <a href="<?php echo $this->getIndexUrl()?>/login/logout/"> 注销</a> </div>
 </div>
 <!-- END Header -->
 
@@ -165,17 +58,16 @@ function notice_end(){
       <form id="changelist-form" action="" method="post">
         <div class="actions">
         <label>表:
-          <select id="table_list" name="action">
+          <select id="table_list">
             <option value="" selected="selected">---------</option>
             <?php 
 					$tables = $this->tables;
 					foreach($tables as $table){
-						echo '<option value="'.$table.'">'.$table.'</option>';
+						echo '<option value="'.$table["name"].'">'.$table["show_name"].'</option>';
 					}
 				?>
           </select>
         </label>
-        <input type="hidden" class="select-across" value="0" name="select_across" />
         <!--<button type="submit" class="button" title="Run the selected action" name="index" value="0">执行</button>-->
         <?php if(is_array($this->columns)){$columns = $this->columns; ?>
         共 <?php echo $this->count; ?> 条记录 
@@ -187,6 +79,9 @@ function notice_end(){
         <input type="button" id="selectNoneAction" value="全不选" />
         <input type="button" id="deleteAction" value="删除" />
         <input type="button" id="addAction" value="增加" />
+        <input type="button" id="rowManageAction" value="管理显示列" />
+        <input type="button" id="searchAction" value="显示搜索" />
+        <input type="submit" id="doSearchAction" class="hide" value="搜索" />
         <!--<input type="button" id="updateAction" value="修改" />-->
         <table cellspacing="0" id="result_list">
           <thead>
@@ -195,7 +90,7 @@ function notice_end(){
               <?php 
 $primary_key = "id";
 foreach($columns as $column){
-	echo "<th> <a >".$column['Field']."</a></th>";
+	echo "<th> ".$column['Field']."</th>";
 	if($column["Key"]=="PRI"){
 		$primary_key = $column['Field'];
 	}
@@ -207,16 +102,17 @@ foreach($columns as $column){
               <td class="action-checkbox"></td>
               <?php 
 foreach($columns as $column){
-					  echo "<td> <a > ".$column['Type']."</a></th>";
+					  echo "<td>".$column['Type']."</td>";
 					  
 }?>
             </tr>
-            <tr>
-            	<td>so</td>
+            <!-- mark : 搜索用-->
+            <tr id="search_row" class="row1 hide">
+            	<td></td>
                 <?php 
-				foreach($columns as $column){
-					  echo "<td>  ".$column['Type']."</th>";//mark
-				}?>             
+				foreach($columns as $column){?>
+					 <td><input type="text"  name="<?php echo $column['Field']; ?>" /></td>
+<?php			}?>             
             </tr>
             <?php 
  		$data = $this->data;
@@ -254,5 +150,37 @@ foreach($columns as $column){
 </div>
 <!-- END 弹出层 -->
 
+<style type="text/css">
+.skin {
+	width : 200px;
+	border : 1px solid gray;
+	padding : 2px;
+	height:auto;
+	display:none;
+	position : absolute;
+	background-color:#CCC;
+}
+div.menuitems {
+	margin:4px auto;
+	border-bottom:1px solid #FFF;
+	height:25px;
+	line-height:25px;
+}
+div.menuitems a {
+	text-decoration : none;
+}
+div.menuitems:hover {
+	background-color : #c0c0c0;
+}
+</style>
+
+<div id="r_menu" class="skin">
+    <div class="menuitems" >
+        <a href="#" id="r_menu_edit">编辑</a>
+    </div>
+    <div class="menuitems">
+        <a href="#" id="r_menu_view">查看详情</a>
+    </div>
+</div>
 </body>
 </html>

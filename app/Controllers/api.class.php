@@ -20,29 +20,17 @@ class apiController extends Controller{
 		);
 		
 		if($sn){
-			$item = $this->nic->select("DEV_SN='".$this->getGet("sn")."'");
-			if(!is_array($item) || empty($item)){
-				//当找不到记录时，应该怎么处理？
-				$this->showError("not found");
-			}else{
-				if(count($item)!=1){
-					//mark 当取到多个记录的时候应该怎么处理
-					echo "mark 待处理:发现".count($item)."条符合条件的数据。"; 
-					D($item);
-				}else{
-					//正常情况下。输出必要的信息
-					$item = $item[0];
-					if(!is_array($item) || empty($item)){
-						$this->showError("not match");
-					}else{
-						$data["querysuccess"] = 1;
-						echo "DEV_SN:".$item["DEV_SN"]."\n";
-						echo "NIC_NAME:".$item["NIC_NAME"]."\n";
-						echo "IPADDR:".$item["IPADDR"]."\n";
-						echo "NETMASK:".$item["NETMASK"]."\n";
-						echo "GATEWAY:".$item["GATEWAY"]."\n";
-						echo "SPEED:".$item["SPEED"];
-					}
+			//mark:真正使用时 需要修改$break
+			$break = "\n";
+			//$break = "<br>";
+			$item = $this->dev->select("DEV_SN='".$sn."'");
+			if(is_array($item) && !empty($item)){
+				echo "hostname ".$item[0]["EL_HOSTNAME"].$break;
+			}
+			$item = $this->nic->select("DEV_SN='".$sn."'");
+			if(is_array($item) && !empty($item)){
+				foreach($item as $feild){
+					echo $feild["NIC_NAME"]." ".$feild["IPADDR"]." ".$feild["NETMASK"]." ".$feild["GATEWAY"].$break;
 				}
 			}
 		}else{
@@ -56,7 +44,12 @@ class apiController extends Controller{
 	
 	public function postbackAction(){
 		//操作是否成功的回调函数
+		D($this->getGet());
 		$id = "mark";//mark : 需要根据条件查找到之前插入的数据
+		
+		//request_url = http://localhost/joy4php/app/index.php/api/postback?lo=00:00:00:00:00:00&eth3=d8:9d:67:18:9c:2b&eth2=d8:9d:67:18:9c:2a&eth1=d8:9d:67:18:9c:29&eth0=d8:9d:67:18:9c:28&SN=6CU322ZZBT
+		
+		return;//=================一下的代码需要重新审视
 		$success=trim($this->getGet("success"));
 		$data=array(
 			"postbacktime" => time(),
@@ -74,8 +67,11 @@ class apiController extends Controller{
 
 	}
 	
+	
+	/*
 	protected function showError($msg){
 		echo "success:0\n";
 		echo "error_massage:$msg";
 	}
+	*/
 }

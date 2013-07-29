@@ -1,5 +1,6 @@
 <?php
 return array(
+	//setting for joy4php framework
 	'db_type'=>"mysql",
 	'db_host'=>"localhost",
 	'db_user'=>"root",
@@ -16,4 +17,7 @@ return array(
 	'log_destination'=>WEB_ROOT."data".DIRECTORY_SEPARATOR."log".DIRECTORY_SEPARATOR,
 	
 	'page_size' =>20,
+	
+	//setting for this application
+	'db_config_table'=>'dbms_config',
 );

@@ -17,7 +17,7 @@ $this->css(array("base","login"));
   <!-- Header -->
   <div id="header">
     <div id="branding">
-      <h1 id="site-name">Django 管理</h1>
+      <h1 id="site-name">Login</h1>
     </div>
   </div>
   <!-- END Header --> 

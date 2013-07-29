@@ -1,7 +1,7 @@
 <?php
 session_start();
 header("Content-type: text/html; charset=utf-8"); 
-define('JOY4PHP', dirname(__FILE__).DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."joy4PHP".DIRECTORY_SEPARATOR);
+define('JOY4PHP', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."joy4PHP").DIRECTORY_SEPARATOR);
 require JOY4PHP."joy4PHP.php";
 define("WEB_ROOT",dirname(__FILE__).DIRECTORY_SEPARATOR);
 $joy4PHP = new joy4PHP(WEB_ROOT."Conf/Conf.php");

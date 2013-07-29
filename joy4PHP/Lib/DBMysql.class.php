@@ -35,6 +35,10 @@ class DBMysql extends DB implements IDB{
 		$this->_sqls[] = $sql;
 		$this->freeResult();
 		$this->_queryLink = mysql_query($sql,$this->_dbLink);
+		if(!$this->_queryLink){
+			//mark : what if query faild??
+			return array();
+		}
 		$result = array();
 		while($result[] = mysql_fetch_assoc($this->_queryLink)){};
 		//pop the false item out of $result

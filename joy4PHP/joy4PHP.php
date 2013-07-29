@@ -1,4 +1,16 @@
 <?php
+function __autoload($class_name){
+	$model_path = WEB_ROOT."Models/{$class_name}.class.php";
+	$controller_path = WEB_ROOT."Controllers/{$class_name}.class.php";
+	if(file_exists($model_path)) {
+		include_once $model_path;
+	}else if(file_exists($controller_path)) {
+		include_once $controller_path;
+	}else{
+		throw new Exception("class $class_name not found!");
+	};
+}
+
 class joy4PHP{
 	
 	protected $_reg = null;
