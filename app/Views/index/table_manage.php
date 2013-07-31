@@ -3,14 +3,11 @@
         <td>名称</td>
         <td>是否显示</td>
     </tr>
-<?php 
-//D($this->columns,true);
-foreach($this->columns as $column) {
-	
-	?>
+<?php
+foreach($this->columns as $column) {?>
     <tr>
-        <td><?php echo $column['show_name'];?></td>
-        <td><input type="checkbox" <?php 	if($column['Key']=="PRI"){?> disabled="disabled" <?php }?> name="fields[]" value=<?php echo "'".$column['Field']."' "; if($column["is_show"]) echo 'checked="checked"'?> ></td>
+        <td><?php echo $column['name'];?></td>
+        <td><input type="text" name="<?php echo $column['name'];?>" value="<?php echo $column['show_name'];?>" /></td>
     </tr>
 <?php }?>
 	<tr>
@@ -20,16 +17,18 @@ foreach($this->columns as $column) {
 </table>
 <script type="text/javascript" language="javascript">
 function frame_submit(){
-	var url = "<?php echo $this->getModuleUrl()?>/column_manage?table=<?php echo $this->table; ?>";
+	var url = "<?php echo $this->getModuleUrl()?>/table_manage?table=<?php echo $this->table; ?>";
 		var data = new Object();
 		var data_value = new Array();
-		$("#frame_table input[type=checkbox]").each(function(index, element) {
-			if($(this).attr("checked"))  { 
+		var data_key = new Array();
+		$("#frame_table input[type=text]").each(function(index, element) {
 			var val = $(this).val();
+			var key = $(this).parent().prev().html();
 			data_value.push(val);
-			}
+			data_key.push(key);
         });
 		data.data_value = data_value;
+		data.data_key = data_key;
 		$.post(
 			url,
 			data,

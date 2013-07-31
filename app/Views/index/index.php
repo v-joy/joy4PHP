@@ -57,7 +57,7 @@ $(document).ready(function(e) {
         </div>-->
       <form id="changelist-form" action="" method="post">
         <div class="actions">
-        <label>表:
+        <label>模块:
           <select id="table_list">
             <option value="" selected="selected">---------</option>
             <?php 
@@ -74,44 +74,44 @@ $(document).ready(function(e) {
         <!--<label for="searchbar"><img src="<?php echo $this->base_path;?>/Public/img/icon_searchbox.png" alt="Search" /></label>
               <input type="text" size="40" name="q" value="" id="searchbar" />
               <input type="submit" value="搜索" />--> 
-        <span style="margin:auto 50px auto 100px;">操作列表：</span>
+        <span style="margin:auto 20px auto 100px;">操作列表：</span>
         <input type="button" id="selectAllAction" value="全选" />
         <input type="button" id="selectNoneAction" value="全不选" />
         <input type="button" id="deleteAction" value="删除" />
         <input type="button" id="addAction" value="增加" />
-        <input type="button" id="rowManageAction" value="管理显示列" />
         <input type="button" id="searchAction" value="显示搜索" />
         <input type="submit" id="doSearchAction" class="hide" value="搜索" />
+        <span style=" margin:auto 20px;">|</span>
+        <input type="button" id="rowManageAction" value="管理显示列" />
+        <input type="button" id="tableManageAction" value="管理模块名称" />
+        <input type="button" id="columnManageAction" value="管理数据项名称" />
         <!--<input type="button" id="updateAction" value="修改" />-->
         <table cellspacing="0" id="result_list">
           <thead>
             <tr>
               <th class="action-checkbox-column"> <input type="checkbox" id="action-toggle" /></th>
               <?php 
-$primary_key = "id";
+$primary_key = $this->primary_key;
 foreach($columns as $column){
-	echo "<th> ".$column['Field']."</th>";
-	if($column["Key"]=="PRI"){
-		$primary_key = $column['Field'];
-	}
+	echo "<th> ".$column['show_name']."</th>";
 }?>
             </tr>
           </thead>
           <tbody>
-            <tr class="row2">
+<!--            <tr class="row2">
               <td class="action-checkbox"></td>
               <?php 
 foreach($columns as $column){
-					  echo "<td>".$column['Type']."</td>";
+					  echo "<td>".$column['type']."</td>";
 					  
 }?>
-            </tr>
+            </tr>-->
             <!-- mark : 搜索用-->
             <tr id="search_row" class="row1 hide">
             	<td></td>
                 <?php 
 				foreach($columns as $column){?>
-					 <td><input type="text"  name="<?php echo $column['Field']; ?>" /></td>
+					 <td><input type="text" class="search_field_input"  name="<?php echo $column['Field']; ?>" /></td>
 <?php			}?>             
             </tr>
             <?php 
@@ -157,7 +157,7 @@ foreach($columns as $column){
 	padding : 2px;
 	height:auto;
 	display:none;
-	position : absolute;
+	position : absolute !important;
 	background-color:#CCC;
 }
 div.menuitems {
@@ -182,5 +182,21 @@ div.menuitems:hover {
         <a href="#" id="r_menu_view">查看详情</a>
     </div>
 </div>
+
+<div id="search_suggest" class="skin">
+    <div class="menuitems" >
+        严格等于<span class="search_value"></span>
+    </div>
+    <div class="menuitems">
+        包含该值<span class="search_value"></span>
+    </div>
+    <div class="menuitems">
+        在此之前<span class="search_value"></span>
+    </div>
+    <div class="menuitems">
+        选择时间
+    </div>
+</div>
+
 </body>
 </html>

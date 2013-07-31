@@ -23,18 +23,15 @@ class indexController extends Controller{
 			if(!$has_selected_table){throw new Exception("不存在该表！");}
 			$columns = $config_model->query("desc {$selected_table}");
 			$show_list = $config_model->get_show_columns($selected_table);
-			if($show_list!="*")	$show_list = explode(",",$show_list);
-			$show_list_array=array();
-			foreach($columns as $key=>$item){
-				if($show_list=="*" || in_array($item['Field'],$show_list) ){//|| $item['Key']=="PRI"
-					$show_list_array[] = $item;
+			
+			if(is_array($show_list)){
+				$this->view->columns = $show_list;
+				foreach($show_list as $item){
+					$columns_show .= $item['Field'].",";
 				}
+				$columns_show = rtrim($columns_show,",");
 			}
 			
-			if(is_array($show_list_array)){
-				$this->view->columns = $show_list_array;
-			}
-			$columns_show = $config_model->get_show_columns($selected_table);
 			$table_model = new Model($selected_table,"");
 			$page_size = Reg::get("page_size");
 			if($this->getGet("page")){
@@ -44,10 +41,11 @@ class indexController extends Controller{
 			}
 			$condition = "1=1";
 			if($this->isPost()){
+				$all_columns = $config_model->get_columns($selected_table);
 				$posts = $this->getPost();
 				if(is_array($posts)){
 					foreach($posts as $key=>$post){
-						foreach($this->view->columns as $c_key=>$column){
+						foreach($all_columns as $c_key=>$column){
 							if($key==$column["Field"] && $post!=""){
 								$c_type = substr($column["Type"],0,3);
 								switch($c_type){
@@ -69,12 +67,15 @@ class indexController extends Controller{
 										//text
 										$condition.=" and $key like '%".$post."%' ";
 										break;
+									default :
+										throw new Exception("unsupported type:".$c_type);
 								}
 							}
 						}
 					}
 				}
 			}
+			//mark: $condition needs to filter sql injection
 			$count_condition = "1=1";
 			if($condition=="1=1"){
 				$condition = "";
@@ -85,12 +86,18 @@ class indexController extends Controller{
 			$begin_num = $page_size*($page-1);
 			$count = $table_model->count($count_condition);
 			$this->view->page_total =  ceil($count/$page_size);
-			$this->view->count = $count;	
+			$this->view->count = $count;
+			$this->view->primary_key = $config_model->get_pri($selected_table);
 			$this->view->data = $table_model->query("select {$columns_show} from `{$selected_table}` $condition limit {$begin_num},{$page_size}");
+			//echo $table_model->logDb();exit;
 		}
 		$this->view->dbname = Reg::get("db_name");
 		$this->display();
 	}
+	
+/*	protected function get_search_condition($val,$Field,$table){
+		
+	}*/
 	
 	public function deleteAction(){
 		$key = $this->getPost("pri")?$this->getPost("pri"):"id";
@@ -113,10 +120,8 @@ class indexController extends Controller{
 		$config_model = new ConfigModel();
 		$table = $this->getGet("table");
 		if($this->isPost()){
-			$keys = $this->getPost("keys");
-			$val = $this->getPost("val");
-			$keys = explode(",",rtrim($keys,","));
-			$val = explode(",",rtrim($val,","));
+			$keys = $this->getPost("data_key");
+			$val = $this->getPost("data_value");
 			$data = array_combine($keys,$val);
 			$model = new Model($table,"");
 			$success = $model->add($data);
@@ -129,7 +134,7 @@ class indexController extends Controller{
 			}
 			echo json_encode($result);
 		}else{
-			$list = $config_model->query("desc {$table}");
+			$list = $config_model->get_columns($table);
 			$this->view->columns = $list;
 			$this->view->table = $table;
 			$this->display();
@@ -140,8 +145,8 @@ class indexController extends Controller{
 		$config_model = new ConfigModel();
 		$table = $this->getGet("table");
 		if($this->isPost()){
-			$fields = $this->getPost("fields");
-			$fields = rtrim($fields,",");
+			$fields = $this->getPost("data_value");
+			$fields = implode(",",$fields);
 			if($config_model->set_show_columns($fields,$table)){
 				$result["success"]=true;
 			}else{
@@ -151,17 +156,52 @@ class indexController extends Controller{
 			echo json_encode($result);
 			
 		}else{
-			$show_list = $config_model->get_show_columns($table);
-			if($show_list!="*")	$show_list = explode(",",$show_list);
-			$list = $config_model->query("desc {$table}");
-			foreach($list as $key=>$item){
-				if($show_list=="*" || in_array($item['Field'],$show_list)){
-					$list[$key]["is_show"] = true;
-				}else{
-					$list[$key]["is_show"] = false;
-				}
+			$this->view->columns = $config_model->get_columns($table);
+			$this->view->table = $table;
+			$this->display();
+		}
+	}
+	
+	public function table_manageAction(){
+		$config_model = new ConfigModel();
+		$table = $this->getGet("table");
+		if($this->isPost()){
+			$data_value = $this->getPost("data_value");
+			$data_key = $this->getPost("data_key");
+			$data = array_combine($data_key,$data_value);
+			$success = $config_model->update_table_show_name($data);
+			if($success){
+				$result["success"]=true;
+			}else{
+				$result["success"]=false;
+				$result["message"]="更改失败，详细日志：".$config_model->logDb();
 			}
-			$this->view->columns = $list;
+			echo json_encode($result);
+		}else{
+			$this->view->columns = $config_model->get_table_list();
+			$this->view->table = $table;
+			$this->display();
+		}
+	}
+	
+	public function description_manageAction(){
+		$config_model = new ConfigModel();
+		$table = $this->getGet("table");
+		if($this->isPost()){
+			$keys = $this->getPost("data_key");
+			$values = $this->getPost("data_value");
+			$descriptions = array_combine($keys,$values);
+			$success = $config_model->update_column_description($descriptions,$table);
+			if($success){
+				$result["success"]=true;
+			}else{
+				$result["success"]=false;
+				$result["message"]="更改失败，详细日志：".$config_model->logDb();
+			}
+			echo json_encode($result);
+			
+		}else{
+			$this->view->columns = $config_model->get_columns($table);
 			$this->view->table = $table;
 			$this->display();
 		}
@@ -173,7 +213,7 @@ class indexController extends Controller{
 		$model = new Model($table);
 		$configModel = new ConfigModel();
 		$pri_key= $configModel->get_pri($table); 
-		$list = $model->query("desc {$table}");
+		$list = $configModel->get_columns($table);
 		$this->view->columns = $list;
 		$this->view->values = $model->select($pri_key."=".$pri);
 		$this->view->values = $this->view->values[0];

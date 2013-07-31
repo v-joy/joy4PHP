@@ -119,8 +119,25 @@ function load_page(url_val){
 function menu(x,y){
 	x = x + "px";
 	y = y + "px";
-	$("#r_menu").css({left:x,top:y}).slideDown(200);	
+	var data = {"left":x,"top":y};
+	$("#r_menu").css(data);
+	$("#r_menu").slideDown(200);	
 }
+function show_search_suggest(x,y,val){
+	x = x + "px";
+	y = y + "px";
+	$("#search_suggest .search_value").html(val);
+/*	.each(function(){
+		$(this).val(val);
+	});*/
+	$("#search_suggest").css({left:x,top:y});
+	$("#search_suggest").slideDown(200);
+}
+
+function close_search_suggest(){
+	$("#search_suggest").slideUp(200);
+}
+
 
 function menu_end(){
 	$("#r_menu").slideUp(200);
@@ -149,10 +166,10 @@ $(document).ready(function(e) {
 		$(this).addClass("curent_td");
 		e = e || event;
 		if(e.which==3){
-			e.cancelBubble = true;
+			menu(e.clientX+$(document).scrollLeft(),e.clientY+$(document).scrollTop());
+        	e.cancelBubble = true;
        		e.returnValue = false;
-			menu(e.clientX+window.scrollX,e.clientY+window.scrollY);
-       return false; 
+			return false; 
 		}else{
 			menu_end();	
 		}
@@ -209,6 +226,14 @@ $(document).ready(function(e) {
 		load_page(module_url+"/column_manage?table="+curent_table);
 	});
 	
+	$("#tableManageAction").click(function(){
+		load_page(module_url+"/table_manage?table="+curent_table);
+	});
+	
+	$("#columnManageAction").click(function(){
+		load_page(module_url+"/description_manage?table="+curent_table);
+	});
+	
 	$("#searchAction").click(function(e){
 		e = e||event;
 		e.preventDefault();
@@ -225,10 +250,6 @@ $(document).ready(function(e) {
 		}
 	});
 	
-	$(document).click(function(e) {
-        menu_end();
-    });
-	
 	$("#r_menu_edit").click(function(e){
 		e = e || event;
 		e.preventDefault();
@@ -242,10 +263,27 @@ $(document).ready(function(e) {
 		var pri = $(".curent_td").parent().attr("id").substr(3);
 		load_page(module_url+"/view?table="+curent_table+"&pri="+pri);
 		menu_end();
-		log(123);
 	});
 	
+	$(".search_field_input").keyup(function(e) {
+        e = e || event;
+		$elem = $(this).parent();
+		var val = $(this).val();
+		if(val){
+			show_search_suggest($elem.offset().left,$elem.offset().top+$elem.height()+10,val);
+		}else{
+			close_search_suggest();
+		}
+    });
+
+	$(".search_field_input").blur(function(e) {
+		close_search_suggest();
+    });
 });
 
 //禁止邮件菜单
-document.oncontextmenu = function(){event.returnValue = false;};
+document.oncontextmenu = function(e){
+	e = e || event;
+	e.returnValue = false;
+	return false;
+};
