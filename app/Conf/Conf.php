@@ -5,7 +5,7 @@ return array(
 	'db_host'=>"localhost",
 	'db_user'=>"root",
 	'db_pwd'=>"",
-	'db_name'=>"pxe",
+	'db_name'=>"pxe2",
 	'db_prefix'=>"",
 	'db_charset'=>"utf8",
 	

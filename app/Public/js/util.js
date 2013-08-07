@@ -127,9 +127,6 @@ function show_search_suggest(x,y,val){
 	x = x + "px";
 	y = y + "px";
 	$("#search_suggest .search_value").html(val);
-/*	.each(function(){
-		$(this).val(val);
-	});*/
 	$("#search_suggest").css({left:x,top:y});
 	$("#search_suggest").slideDown(200);
 }
@@ -250,6 +247,10 @@ $(document).ready(function(e) {
 		}
 	});
 	
+	$("#showAllAction").click(function(e){
+		window.location.href = action_url+"/table/"+curent_table;
+	});
+	
 	$("#r_menu_edit").click(function(e){
 		e = e || event;
 		e.preventDefault();
@@ -269,11 +270,16 @@ $(document).ready(function(e) {
         e = e || event;
 		$elem = $(this).parent();
 		var val = $(this).val();
-		if(val){
+		//mark 
+//		if(val){
 			show_search_suggest($elem.offset().left,$elem.offset().top+$elem.height()+10,val);
-		}else{
-			close_search_suggest();
-		}
+//		}else{
+//			close_search_suggest();
+//		}
+    });
+	
+	$(".search_field_input").focus(function(e) {
+        $(this).trigger("keyup");
     });
 
 	$(".search_field_input").blur(function(e) {

@@ -1,20 +1,17 @@
 <table width="100%" id="frame_table">
     <tr>
         <td>名称</td>
-        <td>字段</td>
         <td>数据</td>
     </tr>
 <?php 
 foreach($this->columns as $column) {?>
     <tr>
         <td><?php echo $column['show_name'];?></td>
-        <td><?php echo $column['Field'];?></td>
         <td><input type="text" name="<?php echo $column['Field'];?>" value="" ></td>
     </tr>
 <?php }?>
 	<tr>
         <td><input type="button" onClick="frame_submit()" value="确定"></td>
-        <td></td>
         <td><input type="button" onClick="frame_cancle()" value="取消"></td>
     </tr>
 </table>

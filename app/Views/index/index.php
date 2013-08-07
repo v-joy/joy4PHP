@@ -55,7 +55,7 @@ $(document).ready(function(e) {
             </div>
           </form>
         </div>-->
-      <form id="changelist-form" action="" method="post">
+      <form id="changelist-form" action="<?php echo $this->getActionUrl()."/table/".$_GET["table"]; ?>" method="get">
         <div class="actions">
         <label>模块:
           <select id="table_list">
@@ -80,8 +80,11 @@ $(document).ready(function(e) {
         <input type="button" id="deleteAction" value="删除" />
         <input type="button" id="addAction" value="增加" />
         <input type="button" id="searchAction" value="显示搜索" />
-        <input type="submit" id="doSearchAction" class="hide" value="搜索" />
-        <span style=" margin:auto 20px;">|</span>
+        <input type="submit" name="is_search" id="doSearchAction" class="hide" value="搜索" />
+        <?php if(isset($_GET["is_search"])) {?> 
+        <input type="button" id="showAllAction" value="显示全部" />
+        <?php }?>
+		<span style=" margin:auto 20px;">|</span>
         <input type="button" id="rowManageAction" value="管理显示列" />
         <input type="button" id="tableManageAction" value="管理模块名称" />
         <input type="button" id="columnManageAction" value="管理数据项名称" />
@@ -129,7 +132,7 @@ foreach($columns as $column){
         </table>
         <?php }else{echo "请选择数据表";}?>
         <p class="paginator"> 共有 <?php echo $this->page_total?> 页 <
-          <?php for($page=1;$page<=$this->page_total;$page++) echo "<a href=\"".$this->getActionUrl()."?table=".$_GET["table"]."&page={$page}\" >{$page}</a> "; ?>
+          <?php for($page=1;$page<=$this->page_total;$page++) echo "<a href=\"".url_set_var("page",$page)."\" >{$page}</a> "; ?>
           ></p>
       </form>
     </div>
@@ -185,16 +188,19 @@ div.menuitems:hover {
 
 <div id="search_suggest" class="skin">
     <div class="menuitems" >
-        严格等于<span class="search_value"></span>
+        严格等于 '<span class="search_value"></span>'
     </div>
     <div class="menuitems">
-        包含该值<span class="search_value"></span>
+        包含该值 '<span class="search_value"></span>'
     </div>
     <div class="menuitems">
-        在此之前<span class="search_value"></span>
+        大于该值 '<span class="search_value"></span>'
     </div>
     <div class="menuitems">
-        选择时间
+        小于该值 '<span class="search_value"></span>'
+    </div>
+    <div class="menuitems">
+        选择时间(开发中)
     </div>
 </div>
 

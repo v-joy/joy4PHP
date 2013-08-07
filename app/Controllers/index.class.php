@@ -40,13 +40,13 @@ class indexController extends Controller{
 				$page = 1;
 			}
 			$condition = "1=1";
-			if($this->isPost()){
+			if($this->getGet("is_search")){
 				$all_columns = $config_model->get_columns($selected_table);
-				$posts = $this->getPost();
-				if(is_array($posts)){
-					foreach($posts as $key=>$post){
+				$gets = $this->getGet();
+				if(is_array($gets)){
+					foreach($gets as $key=>$get){
 						foreach($all_columns as $c_key=>$column){
-							if($key==$column["Field"] && $post!=""){
+							if($key==$column["Field"] && $get!=""){
 								$c_type = substr($column["Type"],0,3);
 								switch($c_type){
 									case "int":
@@ -57,7 +57,7 @@ class indexController extends Controller{
 										//boolean
 									case "dou":
 										//double
-										$condition.=" and $key=$post ";
+										$condition.=" and $key=$get ";
 										break;
 									case "cha":
 										//char
@@ -65,7 +65,7 @@ class indexController extends Controller{
 										//varchar
 									case "tex":
 										//text
-										$condition.=" and $key like '%".$post."%' ";
+										$condition.=" and $key like '%".$get."%' ";
 										break;
 									default :
 										throw new Exception("unsupported type:".$c_type);
@@ -89,7 +89,6 @@ class indexController extends Controller{
 			$this->view->count = $count;
 			$this->view->primary_key = $config_model->get_pri($selected_table);
 			$this->view->data = $table_model->query("select {$columns_show} from `{$selected_table}` $condition limit {$begin_num},{$page_size}");
-			//echo $table_model->logDb();exit;
 		}
 		$this->view->dbname = Reg::get("db_name");
 		$this->display();
