@@ -89,4 +89,8 @@ class View{
 		return $_SERVER["SCRIPT_NAME"];
 	}
 	
+	public function getPublicUrl(){
+		return $this->base_path."/Public";
+	}
+	
 }

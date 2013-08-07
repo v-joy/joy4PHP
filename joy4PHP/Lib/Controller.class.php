@@ -16,6 +16,8 @@ abstract class Controller{
 		}
 	}
 	
+	public function __init(){}
+	
 	public function __destruct() {
 		
 	}

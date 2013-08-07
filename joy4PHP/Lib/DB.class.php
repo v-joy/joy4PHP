@@ -20,13 +20,13 @@ abstract class DB{
 	}
 	
 	public function insert($data,$table) {
-		$sql = "insert into ".$table." (".implode(",", array_keys($data)).") values ('".implode("','", array_values($data))."')";
+		$sql = "insert into `".$table."` (".implode(",", array_keys($data)).") values ('".implode("','", array_values($data))."')";
 		//echo $sql;return;
 		return $this->execute($sql)?$this->getNewID():false;
 	}
 	
 	public function delete($condition=null,$table) {
-		$sql = "delete from ".$table;
+		$sql = "delete from `".$table."`";
 		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
 		return $this->execute($sql);
 	}
@@ -43,18 +43,18 @@ abstract class DB{
 		if(empty($setsql)){
 			return true;
 		}else{
-			$sql = "update ".$table." set {$setsql}";
+			$sql = "update `".$table."` set {$setsql}";
 			if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";
 			return $this->execute($sql);
 		}
 	}
 	public function select($condition=null,$table) {
-		$sql = "select * from ".$table;
+		$sql = "select * from `".$table."`";
 		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";	
 		return $this->query($sql);
 	}
 	public function count($condition=null,$table) {
-		$sql = "select count(*) as totlenum from ".$table;
+		$sql = "select count(*) as totlenum from `".$table."`";
 		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
 		$result = $this->query($sql);
 		return $result[0]["totlenum"];
