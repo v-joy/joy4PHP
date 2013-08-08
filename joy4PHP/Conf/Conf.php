@@ -17,6 +17,11 @@ return array(
 	'log_destination'=>WEB_ROOT."data".DIRECTORY_SEPARATOR."log".DIRECTORY_SEPARATOR,
 	
 	'default_module'=>'index',
-	'default_action'=>'index'
+	'default_action'=>'index',
+	
+	//cache setting
+	'cache_type'=>"File",//currently joy4php only support file cache
+	'cache_time'=>0, //0 means never expire
+	'cache_path'=>WEB_ROOT."data".DIRECTORY_SEPARATOR."cache".DIRECTORY_SEPARATOR
 	
 );

@@ -1,14 +1,17 @@
 <?php
 function __autoload($class_name){
-	$model_path = WEB_ROOT."Models/{$class_name}.class.php";
-	$controller_path = WEB_ROOT."Controllers/{$class_name}.class.php";
-	if(file_exists($model_path)) {
-		include_once $model_path;
-	}else if(file_exists($controller_path)) {
-		include_once $controller_path;
-	}else{
-		throw new Exception("class $class_name not found!");
-	};
+	$path = array(
+		WEB_ROOT."Models/{$class_name}.class.php",
+		WEB_ROOT."Controllers/{$class_name}.class.php",
+		JOY4PHP."/Lib/{$class_name}.class.php"
+	);
+	foreach($path as $item){
+		if(file_exists($item)) {
+			include_once $item;
+			return;
+		}
+	}
+	throw new Exception("class $class_name not found!");
 }
 
 class joy4PHP{
@@ -19,8 +22,8 @@ class joy4PHP{
 		//handle configuration
 		$configType = strtolower(gettype($configs));
 		
-		defined('JOY4PHP') || define('JOY4PHP', dirname(__FILE__).DIRECTORY_SEPARATOR);
-		$defaultConfig = require_once(JOY4PHP."Conf/Conf.php");
+		defined('JOY4PHP') || define('JOY4PHP', dirname(__FILE__));
+		$defaultConfig = require_once(JOY4PHP."/Conf/Conf.php");
 		$userConfig = array();
 		switch($configType){
 			case "array":
@@ -85,7 +88,7 @@ class joy4PHP{
 	private function _loadLib($configs){
 		$libPath = JOY4PHP."/Lib/";
 		
-		require_once($libPath."common.php");
+		require_once($libPath."Common.php");
 		require_once($libPath."Reg.class.php");
 		require_once($libPath."Log.class.php");
 		//$this->_reg = Reg::getInstance();

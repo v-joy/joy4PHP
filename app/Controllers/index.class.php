@@ -2,6 +2,16 @@
 class indexController extends Controller{
 	public function indexAction(){
 		
+		//for bebuging
+		$cache = new Cache();
+		if(isset($cache->key)){
+			echo "find the value: ".$cache->key;
+		}else{
+			$cache->key = "this is value".time();
+			echo "new value cached!";
+		}
+		exit;
+		
 		if(!isset($_SESSION["username"])){
 			redirect("http://".$_SERVER['HTTP_HOST'].$this->view->getIndexUrl()."/login");
 		}
