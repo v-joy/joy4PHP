@@ -1,26 +1,18 @@
 <?php
 class indexController extends Controller{
-	public function indexAction(){
-		
-		//for bebuging
-		$cache = new Cache();
-		if(isset($cache->key)){
-			echo "find the value: ".$cache->key;
-		}else{
-			$cache->key = "this is value".time();
-			echo "new value cached!";
-		}
-		exit;
+	
+	public function __init(){
+		//for cache bebuging
+		//$cache = new Cache("File");
+		//$cache->clear();
+		//cache_curent_page();
 		
 		if(!isset($_SESSION["username"])){
 			redirect("http://".$_SERVER['HTTP_HOST'].$this->view->getIndexUrl()."/login");
 		}
-		//mark: 目前好像没有用到
-		$action = $this->getPost("action");
-		if($action){
-			$action.="Action";
-			return $this->$action();
-		}
+	}
+	
+	public function indexAction(){
 		$config_model = new ConfigModel();
 		$tables = $config_model->get_table_list();
 		$this->view->tables = $tables;

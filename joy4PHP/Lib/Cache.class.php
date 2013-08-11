@@ -24,4 +24,9 @@ class Cache{
 	public function has_key($name){
 		return $this->_engine->has_key($name);
 	}
+	
+	public function clear(){
+		return $this->_engine->clear();
+	}
+	
 }
