@@ -32,19 +32,34 @@ function url_set_var($name,$value,$url=null){
 function cache_curent_page($exist_after_show=true){
 	$cache = new Cache("File");
 	$curent_url = $_SERVER["REQUEST_URI"];
-	$signal_var = "is_rendering_cache";
-	if(isset($cache->$curent_url)){
-		echo "cached value:".$cache->$curent_url;
+	$cache_content = $cache->$curent_url;
+	if($cache_content!==false){
+		echo "cached value:".$cache_content;
 		if($exist_after_show){exit;}
 	}else{
-		$is_rendering_cache = isset($_GET[$signal_var]);
+		$signal_var = "is_rendering_cache";
+		$is_rendering_cache = isset($_POST[$signal_var]);
+		$session_post_id = "PHPSESSID";
 		$page_content = "cache file content faild";
 		if(!$is_rendering_cache){
-			$render_path = url_set_var($signal_var,1);
-			//mark : curently only use http protocol
-			$render_path =  "http://".$_SERVER['HTTP_HOST'].$render_path;
-			$page_content = file_get_contents($render_path);
+			$render_path =  "http://".$_SERVER['HTTP_HOST'].$curent_url;
+			$session_id =  session_id();
+			$post_data = array($session_post_id=>$session_id,$signal_var=>1);
+			$curl = curl_init($render_path);
+			curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($curl,CURLOPT_POST,true);
+			curl_setopt($curl,CURLOPT_POSTFIELDS,$post_data);
+			$page_content = curl_exec($curl);
+			curl_close($curl);
 			$cache->$curent_url = $page_content;
+			echo $page_content;exit;
+		}else{
+			if(session_id()!=""){
+				session_write_close();
+			}
+			session_id($_POST[$session_post_id]);
+			// mark : there is a bug : when the server run the following line , it stuck
+			session_start();
 		}
 	}
 }
