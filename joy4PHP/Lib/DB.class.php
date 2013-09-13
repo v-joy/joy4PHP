@@ -14,67 +14,148 @@ abstract class DB{
 	
 	protected $_sqls = array();
 	
-
+	protected $curent_sql = array();
+	/*
+	$curent_sql = array(
+		limit => '',
+		condition => '',
+		order => '',
+		field => '',
+		table => '',
+		data => ''
+	)
+	*/
+	
 	public function __construct() {
 		;
 	}
 	
+	public function L($start=0,$row=20){
+		if(is_array($start)){
+			$row = $start[1];
+			$start = $start[0];
+		}
+		$this->curent_sql["limit"] = " limit $start,$row ";
+		return $this;
+	}
+	
+	public function W($condition=null){
+		if($condition!=null) {		
+			$sql = "";
+			if (is_object($condition)) {
+				$condition = get_object_vars($condition);
+			}
+			if (is_array($condition)) {
+				foreach ($condition as $key => $value) {
+					if(is_string($value)){
+						$sql .= "and `$key` = \"$value\" ";
+					}else{
+						$sql .= "and `$key` = $value ";
+					}
+				}
+				$sql = substr($sql, 4);
+			}elseif (is_string($condition)){
+				$sql = $condition;
+			}else{
+				throw new Exception("unsupported data type");
+			}
+			if(!empty($sql)){
+				$sql = "where ( ".$sql.")";
+			}
+			$this->curent_sql["where"] = $sql;
+		}
+		
+		return $this;
+	}
+	
+	public function O($order="id desc"){
+			$this->curent_sql["order"] = " order by ".$order." ";
+			return $this;
+	}
+	
+	public function F($field="*"){
+		if(!is_array($field)){
+			$this->curent_sql["field"] = $field;
+		}else{
+			$this->curent_sql["field"] = " `".implode("`,`",$field)."` ";
+		}
+		return $this;
+	}
+	
+	public function T($table){
+		$this->curent_sql["table"] = " `".$table.'` ';
+		return $this;
+	}
+	
+	public function D($data){
+		$this->curent_sql["data"] = $data;
+		return $this;
+	}
+	
 	public function insert($data,$table) {
-		$sql = "insert into `".$table."` (".implode(",", array_keys($data)).") values ('".implode("','", array_values($data))."')";
-		//echo $sql;return;
+		$sql = "insert into `".$table."` (`".implode("`,`", array_keys($data))."`) values ('".implode("','", array_values($data))."')";
+		
 		return $this->execute($sql)?$this->getNewID():false;
 	}
 	
 	public function delete($condition=null,$table) {
-		$sql = "delete from `".$table."`";
-		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
+		$this->W($condition)->T($table);
+		$sql = $this->_parseSql("delete");
 		return $this->execute($sql);
 	}
 	public function update($data,$condition=null,$table) {
-		$setsql = "";
-		if(is_array($data)){
-			foreach($data as $key=>$value){
-				$setsql.=$key."='".$value."',";
-			}
-			$setsql = rtrim($setsql,",");
-		}else{
-			$setsql = $data;
-		}
-		if(empty($setsql)){
-			return true;
-		}else{
-			$sql = "update `".$table."` set {$setsql}";
-			if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";
-			return $this->execute($sql);
-		}
+		$this->W($condition)->T($table)->D($data);
+		$sql = $this->_parseSql("update");
+		return $this->execute($sql);
 	}
 	public function select($condition=null,$table) {
-		$sql = "select * from `".$table."`";
-		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";	
+		$this->W($condition)->T($table);
+		$sql = $this->_parseSql("select");
 		return $this->query($sql);
 	}
 	public function count($condition=null,$table) {
-		$sql = "select count(*) as totlenum from `".$table."`";
-		if($condition!=null) $sql.=" where (".$this->_parseCondition($condition).")";		
+		$this->W($condition)->T($table);
+		$sql = $this->_parseSql("count");
 		$result = $this->query($sql);
 		return $result[0]["totlenum"];
 	}
 	
-	protected function _parseCondition($condition){
+	protected function _parseSql($type="select"){
 		$sql = "";
-		if (is_object($condition)) {
-			$condition = get_object_vars($condition);
+		$this->curent_sql["field"] = $this->curent_sql["field"]?$this->curent_sql["field"]:"*";
+		switch($type){
+			case "select":
+				$sql .= "select ".$this->curent_sql["field"]." from ".$this->curent_sql["table"]." ".$this->curent_sql["where"]." ".$this->curent_sql["order"]." ".$this->curent_sql["limit"];
+				break;
+			case "count":
+				$sql .= "select count(*) as totlenum from ".$this->curent_sql["table"]." ".$this->curent_sql["where"];
+				break;	
+			case "update":
+				$setsql = " set ";
+				if(is_array($this->curent_sql["data"])){
+					foreach($this->curent_sql["data"] as $key=>$value){
+						if(is_string($value)){
+							$setsql .= "`".$key."`='".$value."',";
+						}else{
+							$setsql .= "`".$key."`=".$value.",";
+						}
+					}
+					$setsql = rtrim($setsql,",");
+				}else{
+					$setsql .= $this->curent_sql["data"];
+				}
+				$setsql .= " ";
+				$sql .= "update".$this->curent_sql["table"].$setsql.$this->curent_sql["where"];
+				//Log::write($sql);
+				break;
+			case "delete":
+				$sql = "delete from ".$this->curent_sql["table"].$this->curent_sql["where"].$this->curent_sql["limit"];
+				break;
+			default:
+				Log::write("DB.class _parseSql default error");
+				throw new Exception("DB.class _parseSql default error");
 		}
-		if (is_array($condition)) {
-			foreach ($condition as $key => $value) {
-				$sql .= "and $key = \"$value\" ";
-			}
-			$sql = substr($sql, 4);
-		}elseif (is_string($condition)){
-			$sql = $condition;
-		}else{
-			throw new Exception("unsupported data type");
-		}
+		$this->curent_sql = array();
 		return $sql;
 	}
 	
