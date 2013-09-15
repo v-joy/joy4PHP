@@ -15,19 +15,9 @@ abstract class DB{
 	protected $_sqls = array();
 	
 	protected $curent_sql = array();
-	/*
-	$curent_sql = array(
-		limit => '',
-		condition => '',
-		order => '',
-		field => '',
-		table => '',
-		data => ''
-	)
-	*/
 	
 	public function __construct() {
-		;
+		$this->_init_sql();
 	}
 	
 	public function L($start=0,$row=20){
@@ -47,10 +37,10 @@ abstract class DB{
 			}
 			if (is_array($condition)) {
 				foreach ($condition as $key => $value) {
-					if(is_string($value)){
-						$sql .= "and `$key` = \"$value\" ";
-					}else{
+					if(is_int($value)){
 						$sql .= "and `$key` = $value ";
+					}else{
+						$sql .= "and `$key` = \"$value\" ";
 					}
 				}
 				$sql = substr($sql, 4);
@@ -94,7 +84,6 @@ abstract class DB{
 	
 	public function insert($data,$table) {
 		$sql = "insert into `".$table."` (`".implode("`,`", array_keys($data))."`) values ('".implode("','", array_values($data))."')";
-		
 		return $this->execute($sql)?$this->getNewID():false;
 	}
 	
@@ -122,7 +111,9 @@ abstract class DB{
 	
 	protected function _parseSql($type="select"){
 		$sql = "";
-		$this->curent_sql["field"] = $this->curent_sql["field"]?$this->curent_sql["field"]:"*";
+		if(!isset($this->curent_sql["field"]) || empty($this->curent_sql["field"]) ){
+			$this->curent_sql["field"] = "*";
+		}
 		switch($type){
 			case "select":
 				$sql .= "select ".$this->curent_sql["field"]." from ".$this->curent_sql["table"]." ".$this->curent_sql["where"]." ".$this->curent_sql["order"]." ".$this->curent_sql["limit"];
@@ -155,8 +146,19 @@ abstract class DB{
 				Log::write("DB.class _parseSql default error");
 				throw new Exception("DB.class _parseSql default error");
 		}
-		$this->curent_sql = array();
+		_init_sql();
 		return $sql;
+	}
+	
+	protected function _init_sql(){
+		$this->curent_sql = array(
+			'limit' => '',
+			'where' => '',
+			'order' => '',
+			'field' => '*',
+			'table' => '',
+			'data' => ''
+		);
 	}
 	
 	public function __destruct(){

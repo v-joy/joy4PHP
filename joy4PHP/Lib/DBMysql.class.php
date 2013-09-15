@@ -8,6 +8,7 @@
 class DBMysql extends DB implements IDB{
 	
 	public function __construct() {
+		parent::__construct();
 		$this->connect();
 	}
 	public function connect($configs=array()){
