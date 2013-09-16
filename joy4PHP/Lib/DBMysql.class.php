@@ -9,30 +9,22 @@ class DBMysql extends DB implements IDB{
 	
 	public function __construct() {
 		parent::__construct();
-		$this->connect();
 	}
-	public function connect($configs=array()){
-		$finalConfigs = array();
-		$map = array("host","user","pwd","name","prefix","charset");
-		foreach ($map as $item) {
-			$finalConfigs[$item] = isset($configs[$item])?$configs[$item]:Reg::get("db_".$item);
-		}
-		$this->_dbLink = @mysql_connect($finalConfigs["host"],$finalConfigs["user"],$finalConfigs["pwd"]);
+	public function connect(){
+		$this->_dbLink = @mysql_connect($this->_config["host"],$this->_config["user"],$this->_config["pwd"]);
 		if ($this->_dbLink != FALSE) {
-			mysql_select_db($finalConfigs["name"],$this->_dbLink);
+			mysql_select_db($this->_config["name"],$this->_dbLink);
 		}
 		if (mysql_errno() !==0) {
 			throw new Exception("connect to database failed:".mysql_error());
 		}
-		mysql_set_charset($finalConfigs["charset"],$this->_dbLink);
-		
+		mysql_set_charset($this->_config["charset"],$this->_dbLink);
 		return $this->_dbLink;
 	}
 	
 	public function query($sql) {
-		if (!$this->_dbLink) {
-			throw new Exception("database is not connected!");
-		}
+		$this->_check__dbLink();
+		//Log::write($sql);
 		$this->_sqls[] = $sql;
 		$this->freeResult();
 		$this->_queryLink = mysql_query($sql,$this->_dbLink);
@@ -48,12 +40,25 @@ class DBMysql extends DB implements IDB{
 	}
 	
 	public function execute($sql) {
-		if (!$this->_dbLink) {
-			throw new Exception("database is not connected!");
-		}
+		//Log::write($sql);
+		$this->_check__dbLink();
 		$this->_sqls[] = $sql;
 		$this->freeResult();
 		return mysql_query($sql,$this->_dbLink)!=false;
+	}
+	
+	protected  function _check__dbLink(){
+		if (!is_resource($this->_dbLink)) {
+			$connect_time = Reg::get("db_conn_time");
+			$connect_time = $connect_time?$connect_time:0;
+			$connect_time_max = Reg::get("db_conn_time_max");
+			if($connect_time > $connect_time_max){
+				Log::write("database  Reconnection time reached max!".date("Y-m-d h-i-s"));
+				throw new Exception("database  Reconnection time reached max!");
+			}
+			Reg::set("db_conn_time",$connect_time+1);
+			$this->connect();
+		}
 	}
 	
 	public function freeResult(){

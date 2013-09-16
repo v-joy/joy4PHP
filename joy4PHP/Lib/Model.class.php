@@ -22,9 +22,7 @@ class Model{
 		if(!is_null($table)){
 			$this->_table = $this->_prefix.$table;
 		}
-		$dbType = ucwords(strtolower(Reg::get('db_type')));
-		$dbName = "DB".$dbType;
-		$this->_db = new $dbName();
+		$this->_db = DB::getInstance();
 	}
 	
 	public function add($data){
@@ -38,7 +36,11 @@ class Model{
 		}
 		if(!$start_index){
 			$page_var = Reg::get("page_var");
-			$current_page = $_GET[$page_var]?$_GET[$page_var]:1;
+			if(!isset($_GET[$page_var])){
+				$current_page = 1;
+			}else{
+				$current_page = (int)$_GET[$page_var];
+			}
 			$start_index = $page_row*($current_page-1);
 		}
 		return $this->L($start_index,$page_row);

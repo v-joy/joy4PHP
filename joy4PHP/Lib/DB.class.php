@@ -16,8 +16,30 @@ abstract class DB{
 	
 	protected $curent_sql = array();
 	
-	public function __construct() {
+	protected $_config = array();
+	
+	public static $instance = null;
+	
+	public function __construct($configs=array()) {
+		$finalConfigs = array();
+		$map = array("host","user","pwd","name","prefix","charset");
+		foreach ($map as $item) {
+			$finalConfigs[$item] = isset($configs[$item])?$configs[$item]:Reg::get("db_".$item);
+		}
+		$this->_config = $finalConfigs;
+		$this->connect();
 		$this->_init_sql();
+	}
+	
+	public static function getInstance($dbType=null){
+		if(!$dbType){
+			$dbType = ucwords(strtolower(Reg::get('db_type')));
+		}
+		$dbName = "DB".$dbType;
+		if(!isset(self::$instance[$dbName]) || self::$instance[$dbName] == null){
+			self::$instance[$dbName] = new $dbName();
+		}
+		return self::$instance[$dbName];
 	}
 	
 	public function L($start=0,$row=20){
@@ -50,7 +72,7 @@ abstract class DB{
 				throw new Exception("unsupported data type");
 			}
 			if(!empty($sql)){
-				$sql = "where ( ".$sql.")";
+				$sql = "where ( ".$sql." )";
 			}
 			$this->curent_sql["where"] = $sql;
 		}
@@ -125,10 +147,10 @@ abstract class DB{
 				$setsql = " set ";
 				if(is_array($this->curent_sql["data"])){
 					foreach($this->curent_sql["data"] as $key=>$value){
-						if(is_string($value)){
-							$setsql .= "`".$key."`='".$value."',";
-						}else{
+						if(is_int($value)){
 							$setsql .= "`".$key."`=".$value.",";
+						}else{
+							$setsql .= "`".$key."`='".$value."',";
 						}
 					}
 					$setsql = rtrim($setsql,",");
@@ -146,7 +168,7 @@ abstract class DB{
 				Log::write("DB.class _parseSql default error");
 				throw new Exception("DB.class _parseSql default error");
 		}
-		_init_sql();
+		$this->_init_sql();
 		return $sql;
 	}
 	

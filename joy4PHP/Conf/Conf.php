@@ -8,6 +8,7 @@ return array(
 	'db_name'=>"",
 	'db_prefix'=>"",
 	'db_charset'=>"utf8",
+	'db_conn_time_max'=>5, //max database connect time number
 	
 	//log setting 
 	//supported level : info notice warning error none 
