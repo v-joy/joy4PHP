@@ -8,6 +8,12 @@
 class Command{
 	
 	protected $_in = null;
+
+	protected $_action = null;
+	
+	protected $_location = null;
+	
+	protected $_appName = null;
 	
 	public function __construct() {
 		$this->_initIO();
@@ -72,11 +78,55 @@ class Command{
 	
 	public function createnewwebAction(){
 		//mark the following methods have not implemented yet
-		$this->handleLocation($this->getLine("please input the location where you web will be installed"));
-		$this->copyweb();
+		//$this->_appName = $this->getLine("please input the name for your project folder:");
+		$this->handleLocation();
+		$this->copyweb(dirname(__FILE__).DIRECTORY_SEPARATOR."templateApp".DIRECTORY_SEPARATOR,$this->_location);
 		$this->setpermission();
 		$this->getConfig();
 		$this->setConfig();
+		
+		echo "finished";
+	}
+	
+	public function handleLocation(){
+		//mark :有问题：应该判断该目录的上一级是否存在 而不是该目录是否存在
+		$location = $this->getLine("please input the location where you web will be installed:");
+		while(!is_dir($location)){
+			$location = $this->getLine("location not exist,please re-input the location where you web will be installed:");
+			$location= realpath($location);
+		}
+		$this->_location = $location;
+	}
+	
+	public function copyweb($from,$to){
+		$list=opendir($from);
+		while($file=readdir($list)){
+			if($file!="." && $file!=".."){
+				$targetFile = $from.DIRECTORY_SEPARATOR.$file;
+				$toFile = $to.DIRECTORY_SEPARATOR.$file;
+				if(is_file($toFile)){
+					copy($targetFile,$toFile);
+				}elseif(is_dir($toFile)){
+					@mkdir($toFile,0777);
+					echo $toFile."\n";
+					//$this->copyweb($targetFile,$toFile);
+					
+				}
+			}
+		}
+		
+	}
+
+	public function setpermission(){
+		//mark todo
+	}
+
+	public function getConfig(){
+		//mark todo
+	}
+	
+	public function setConfig(){
+		//mark todo
 	}
 	
 	public function checkrequirementAction(){
