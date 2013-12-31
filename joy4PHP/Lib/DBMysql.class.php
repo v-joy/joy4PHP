@@ -56,6 +56,7 @@ class DBMysql extends DB implements IDB{
 				Log::write("database  Reconnection time reached max!".date("Y-m-d h-i-s"));
 				throw new Exception("database  Reconnection time reached max!");
 			}
+			Log::write("database  Reconnection time:".$connect_time);
 			Reg::set("db_conn_time",$connect_time+1);
 			$this->connect();
 		}

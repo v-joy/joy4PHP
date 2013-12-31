@@ -81,8 +81,10 @@ abstract class DB{
 	}
 	
 	public function O($order="id desc"){
-			$this->curent_sql["order"] = " order by ".$order." ";
-			return $this;
+		//$order = explode(" ",$order);
+		
+		$this->curent_sql["order"] = " order by ".$order." ";
+		return $this;
 	}
 	
 	public function F($field="*"){
@@ -162,7 +164,7 @@ abstract class DB{
 				//Log::write($sql);
 				break;
 			case "delete":
-				$sql = "delete from ".$this->curent_sql["table"].$this->curent_sql["where"].$this->curent_sql["limit"];
+				$sql = "delete from ".$this->curent_sql["table"].$this->curent_sql["where"];
 				break;
 			default:
 				Log::write("DB.class _parseSql default error");
