@@ -14,6 +14,12 @@ class Command{
 	protected $_location = null;
 	
 	protected $_appName = null;
+
+	protected $_dbUser = null;
+
+	protected $_dbPass = null;
+
+	protected $_dbName = null;
 	
 	public function __construct() {
 		$this->_initIO();
@@ -66,14 +72,7 @@ class Command{
 		}
 		
 		$action .="Action";
-		$this->$action();
-		
-/*		if(method_exists($this,$action) ){//&& is_callable($this->$action)
-			$this->$action();
-		}else{
-			echo "can not find the action!";
-		}*/
-		return $action;
+		return $this->$action();
 	}
 	
 	public function createnewwebAction(){
@@ -82,9 +81,7 @@ class Command{
 		$this->handleLocation();
 		$this->copyweb(dirname(__FILE__).DIRECTORY_SEPARATOR."templateApp".DIRECTORY_SEPARATOR,$this->_location);
 		$this->setpermission();
-		$this->getConfig();
-		$this->setConfig();
-		
+		$this->ConfigWeb();
 		echo "finished";
 	}
 	
@@ -99,18 +96,20 @@ class Command{
 	}
 	
 	public function copyweb($from,$to){
+		
+		if(!is_dir($to)){
+			@mkdir($to);
+		}
+		
 		$list=opendir($from);
 		while($file=readdir($list)){
 			if($file!="." && $file!=".."){
-				$targetFile = $from.DIRECTORY_SEPARATOR.$file;
+				$sourceFile = $from.DIRECTORY_SEPARATOR.$file;
 				$toFile = $to.DIRECTORY_SEPARATOR.$file;
-				if(is_file($toFile)){
-					copy($targetFile,$toFile);
-				}elseif(is_dir($toFile)){
-					@mkdir($toFile,0777);
-					echo $toFile."\n";
-					//$this->copyweb($targetFile,$toFile);
-					
+				if(is_file($sourceFile)){
+					@copy($sourceFile,$toFile);
+				}elseif(is_dir($sourceFile)){
+					$this->copyweb($sourceFile,$toFile);
 				}
 			}
 		}
@@ -118,15 +117,46 @@ class Command{
 	}
 
 	public function setpermission(){
-		//mark todo
+		//mark need test
+		@chmod($this->_location.DIRECTORY_SEPARATOR."data",0777);
 	}
 
-	public function getConfig(){
-		//mark todo
-	}
-	
-	public function setConfig(){
-		//mark todo
+	public function ConfigWeb(){
+		do{
+			echo "can not connect to mysql , please try again\n";
+			$_dbUser = $this->getLine("your database user:");
+			$_dbPass = $this->getLine("your database password:");
+			$_link = @mysql_connect("127.0.0.1",$_dbUser,$_dbPass);
+		}while(!$_link);
+		$this->_dbUser = $_dbUser;
+		$this->_dbPass = $_dbPass;
+		$this->_dbName = $this->getLine("your database name:");
+		$dbs = mysql_query("show databases",$_link);
+		$result = null;
+		while($result = mysql_fetch_assoc($dbs)){
+			if($result["Database"]==$this->_dbName){
+				$result = true;
+				break;
+			}
+		}
+		if($result !== true){
+			if($this->getPermission("can not find the database,would you like to create it now?")){
+				if(@mysql_query("create database ".$this->_dbName,$_link)){
+					echo "created successfully!\n";
+				}else{
+					echo "created faild!\n";
+				}
+			}
+		}
+		@mysql_close($_link);
+		
+		//set configuration
+		$configure_path = $this->_location.DIRECTORY_SEPARATOR."Conf".DIRECTORY_SEPARATOR."Conf.php";
+		$configure = file_get_contents($configure_path);
+		$configure = str_replace("{dbUser}",$this->_dbUser,$configure);
+		$configure = str_replace("{dbPass}",$this->_dbPass,$configure);
+		$configure = str_replace("{dbName}",$this->_dbName,$configure);
+		file_put_contents($configure_path,$configure);
 	}
 	
 	public function checkrequirementAction(){

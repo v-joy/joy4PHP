@@ -73,7 +73,7 @@ class DBMysql extends DB implements IDB{
 		
 		switch($type){
 			case "text":
-				return "sqls:".implode(",",$this->_sqls).";error:".mysql_error($this->_dbLink);
+				return "sqls:".implode(";",$this->_sqls).";error:".mysql_error($this->_dbLink);
 				break;
 			case "array":
 				$log=array();

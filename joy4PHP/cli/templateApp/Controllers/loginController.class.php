@@ -15,7 +15,7 @@ class loginController extends Controller{
 			}else{
 				$this->error("查询数据库出现错误，请确认数据库的名称和密码是否正确！");
 			}
-			if(! $has_config_table){
+			if(!$has_config_table){
 				$config_model = new ConfigModel();
 				$success = $config_model->create_config_table();
 				if(! $success){

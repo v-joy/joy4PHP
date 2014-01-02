@@ -3,9 +3,9 @@ return array(
 	//setting for joy4php framework
 	'db_type'=>"mysql",
 	'db_host'=>"localhost",
-	'db_user'=>"root",
-	'db_pwd'=>"",
-	'db_name'=>"pxe2",
+	'db_user'=>"{dbUser}",
+	'db_pwd'=>"{dbPass}",
+	'db_name'=>"{dbName}",
 	'db_prefix'=>"",
 	'db_charset'=>"utf8",
 	
