@@ -28,7 +28,7 @@ class loginController extends Controller{
 			
 			if($user->verifyUser($username,$password)){
 				$_SESSION["username"] = $username;
-				redirect($this->view->getIndexUrl());
+				redirect($this->view->getIndexUrl()."/admin");
 			}else{
 				$this->error("账号或者密码错误！");
 			}

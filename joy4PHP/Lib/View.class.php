@@ -13,7 +13,7 @@ class View{
 	protected $base_path="";
 	
 	public function __construct(){
-		$this->base_path = dirname($_SERVER["SCRIPT_NAME"]);
+		$this->base_path = rtrim(dirname($_SERVER["SCRIPT_NAME"]),"/\\");
 	}
 	
 	//assign view variable

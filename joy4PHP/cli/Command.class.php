@@ -82,7 +82,7 @@ class Command{
 		$this->copyweb(dirname(__FILE__).DIRECTORY_SEPARATOR."templateApp".DIRECTORY_SEPARATOR,$this->_location);
 		$this->setpermission();
 		$this->ConfigWeb();
-		echo "finished";
+		echo " web installed successfully\n";
 	}
 	
 	public function handleLocation(){
@@ -96,7 +96,6 @@ class Command{
 	}
 	
 	public function copyweb($from,$to){
-		
 		if(!is_dir($to)){
 			@mkdir($to);
 		}
@@ -113,12 +112,15 @@ class Command{
 				}
 			}
 		}
-		
 	}
 
 	public function setpermission(){
 		//mark need test
 		@chmod($this->_location.DIRECTORY_SEPARATOR."data",0777);
+        $index_path = $this->_location.DIRECTORY_SEPARATOR."index.php";
+		$index_content = file_get_contents($index_path);
+		$index_content = str_replace("{JOY4PHP}",dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR,$index_content);
+		file_put_contents($index_path,$index_content);
 	}
 
 	public function ConfigWeb(){
